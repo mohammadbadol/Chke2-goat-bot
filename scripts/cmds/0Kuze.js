@@ -1,6 +1,6 @@
 module.exports = {
 config: {
-name: "alyabot",
+name: "kuze",
 version: "1.0",
 author: "Tokodori_Frtiz",//remodified by cliff
 countDown: 5,
