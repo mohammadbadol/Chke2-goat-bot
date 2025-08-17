@@ -7,7 +7,7 @@ module.exports = {
     role: 0,
     shortDescription: "bot owner info (noprefix)",
     longDescription: "Shows bot owner info without needing prefix",
-    category: "auto ✅"
+    category: "auto"
   },
 
   onStart: async function () {},
