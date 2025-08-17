@@ -12,7 +12,7 @@ category: "auto",
 
 onStart: async function(){}, 
 onChat: async function({ event, message, getLang }) {
-if (event.body && event.body.toLowerCase() === "alya") {
+if (event.body && event.body.toLowerCase() === "kuze") {
 return message.reply({
 body: `
   ➢ 𝐎𝐰𝐧𝐞𝐫 : 𝐀 𝐑 𝐈 𝐉 𝐈 𝐓 👑
