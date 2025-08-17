@@ -2,7 +2,7 @@ const axios = require("axios");
 
 const mahmud = async () => {
   const base = await axios.get("https://raw.githubusercontent.com/mahmudx7/exe/main/baseApiUrl.json");
-  return base.data.mahmud;
+  return base.data.Arijit;
 };
 
 module.exports.config = {
@@ -17,7 +17,7 @@ module.exports.config = {
 };
 
 module.exports.onStart = async function ({ message, args }) {
-  const apiUrl = await mahmud();
+  const apiUrl = await Arijit();
 
   if (args[0] === "list") {
     try {
