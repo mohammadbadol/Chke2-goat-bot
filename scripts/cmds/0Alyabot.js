@@ -7,7 +7,7 @@ countDown: 5,
 role: 0,
 shortDescription: "no prefix",
 longDescription: "no prefix",
-category: "auto 🪐",
+category: "auto",
 },
 
 onStart: async function(){}, 
