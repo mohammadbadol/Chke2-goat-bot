@@ -81,7 +81,7 @@ module.exports = {
     }
 
     output += `\n📌 Total Commands: ${Object.values(categories).reduce((a, b) => a + b.length, 0)}`;
-    output += `\n📌 Usage: ${prefix}help <command_name>`;
+    output += `\n📌 Usage: ${prefix}help`;
     output += `\n👑 Admin: 𝐀 𝐑 𝐈 𝐉 𝐈 𝐓⚡`;
     output += `\n🌐 Facebook: [ https://fb.com/arijit016 ]`;
 
