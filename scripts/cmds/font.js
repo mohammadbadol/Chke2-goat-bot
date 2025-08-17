@@ -1,8 +1,8 @@
 const axios = require("axios");
 
-const mahmud = async () => {
+const Arijit = async () => {
   const base = await axios.get("https://raw.githubusercontent.com/mahmudx7/exe/main/baseApiUrl.json");
-  return base.data.Arijit;
+  return base.data.mahmud; // keeping API key same, only function renamed
 };
 
 module.exports.config = {
@@ -10,8 +10,8 @@ module.exports.config = {
   aliases: ["font"],
   version: "1.7",
   role: 0,
-  countDowns: 5,
-  author: "MahMUD",
+  countDown: 5,
+  author: "Arijit",
   category: "general",
   guide: { en: "[number] [text] or list" }
 };
@@ -22,7 +22,9 @@ module.exports.onStart = async function ({ message, args }) {
   if (args[0] === "list") {
     try {
       const fontList = (await axios.get(`${apiUrl}/api/font/list`)).data.replace("Available Font Styles:", "").trim();
-      return fontList ? message.reply(`Available Font Styles:\n${fontList}`) : message.reply("No font styles found.");
+      return fontList 
+        ? message.reply(`Available Font Styles (Arijit):\n${fontList}`) 
+        : message.reply("No font styles found.");
     } catch {
       return message.reply("Error fetching font styles.");
     }
