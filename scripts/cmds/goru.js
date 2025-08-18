@@ -28,8 +28,8 @@ module.exports = {
 
     const baseFolder = path.join(__dirname, "NAFIJ");
     const bgPath = path.join(baseFolder, "goru_bg.jpg");
-    const avatarPath = path.join(baseFolder, avatar_${targetID}.png);
-    const outputPath = path.join(baseFolder, goru_result_${targetID}.png);
+    const avatarPath = path.join(baseFolder, `avatar_${targetID}.png`);
+    const outputPath = path.join(baseFolder, `goru_result_${targetID}.png`);
 
     try {
       if (!fs.existsSync(baseFolder)) fs.mkdirSync(baseFolder);
@@ -44,7 +44,7 @@ module.exports = {
       // Download avatar
       const avatarBuffer = (
         await axios.get(
-          https://graph.facebook.com/${targetID}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662,
+          `https://graph.facebook.com/${targetID}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`,
           { responseType: "arraybuffer" }
         )
       ).data;
@@ -64,14 +64,17 @@ module.exports = {
       const userInfo = await api.getUserInfo(targetID);
       const name = userInfo[targetID]?.name || "Someone";
 
-      await message.reply({
-        body: 🤣 ${name} is now a goru reading the newspaper! 🐄🗞,
-        mentions: [{ tag: name, id: targetID }],
-        attachment: fs.createReadStream(outputPath),
-      }, () => {
-        fs.unlinkSync(avatarPath);
-        fs.unlinkSync(outputPath);
-      });
+      await message.reply(
+        {
+          body: `🤣 ${name} is now a goru reading the newspaper! 🐄🗞`,
+          mentions: [{ tag: name, id: targetID }],
+          attachment: fs.createReadStream(outputPath),
+        },
+        () => {
+          if (fs.existsSync(avatarPath)) fs.unlinkSync(avatarPath);
+          if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+        }
+      );
 
     } catch (err) {
       console.error("🐮 Goru command error:", err);
