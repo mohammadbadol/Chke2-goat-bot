@@ -7,14 +7,14 @@ const baseApiUrl = async () => {
 
 module.exports = {
   config: {
-    name: "copuledp2",
-    aliases: ["cdp2"],
+    name: "copuledp",
+    aliases: ["cdp"],
     version: "1.7",
     author: "MahMUD",
     countDown: 10,
     role: 0,
     longDescription: "Fetch a random couple DP for nibba and nibbi",
-    category: "image",
+    category: "𝐈𝐌𝐀𝐆𝐄",
     guide: "{pn}"
   },
 
