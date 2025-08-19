@@ -13,7 +13,6 @@ module.exports = {
     try {
       const mentions = Object.keys(event.mentions);
 
-      // No mentions
       if (mentions.length === 0) {
         return api.sendMessage(
           "❌ Please mention one or two users to create a pair.\n\nExample:\n• pair4 @someone\n• pair4 @user1 @user2",
@@ -32,21 +31,40 @@ module.exports = {
         id2 = mentions[1];
       }
 
-      const userData1 = await usersData.get(id1);
-      const userData2 = await usersData.get(id2);
-      const name1 = userData1.name;
-      const name2 = userData2.name;
+      let userData1 = await usersData.get(id1);
+      let userData2 = await usersData.get(id2);
 
-      const avatarURL1 = await usersData.getAvatarUrl(id1);
-      const avatarURL2 = await usersData.getAvatarUrl(id2);
+      let name1 = userData1.name;
+      let name2 = userData2.name;
+
+      let avatarURL1 = await usersData.getAvatarUrl(id1);
+      let avatarURL2 = await usersData.getAvatarUrl(id2);
+
+      // 🔥 Gender check (female sender must be 2nd)
+      const senderData = await usersData.get(event.senderID);
+      let senderGender = senderData.gender;
+
+      // Convert gender → string
+      if (senderGender === 1) senderGender = "female";
+      else if (senderGender === 2) senderGender = "male";
+      else senderGender = "unknown";
+
+      if (senderGender === "female" && id1 === event.senderID) {
+        // swap so female sender goes to right side
+        [id1, id2] = [id2, id1];
+        [name1, name2] = [name2, name1];
+        [avatarURL1, avatarURL2] = [avatarURL2, avatarURL1];
+      }
 
       // Love % randomizer
       const funnyValues = ["-99", "-100", "0", "101", "0.01", "99.99"];
       const normal = Math.floor(Math.random() * 100) + 1;
-      const lovePercent = Math.random() < 0.2 ? funnyValues[Math.floor(Math.random() * funnyValues.length)] : normal;
+      const lovePercent = Math.random() < 0.2
+        ? funnyValues[Math.floor(Math.random() * funnyValues.length)]
+        : normal;
 
       // Canvas setup
-      const width = 1365, height = 768; 
+      const width = 1365, height = 768;
       const canvas = createCanvas(width, height);
       const ctx = canvas.getContext('2d');
 
@@ -57,7 +75,6 @@ module.exports = {
 
       ctx.drawImage(background, 0, 0, width, height);
 
-      // Draw circular avatars with border + glow
       function drawCircleImage(img, x, y, size) {
         ctx.save();
         ctx.beginPath();
@@ -67,7 +84,6 @@ module.exports = {
         ctx.drawImage(img, x, y, size, size);
         ctx.restore();
 
-        // Border + glow
         ctx.beginPath();
         ctx.arc(x + size / 2, y + size / 2, size / 2 + 3, 0, Math.PI * 2, true);
         ctx.lineWidth = 6;
@@ -78,10 +94,10 @@ module.exports = {
         ctx.shadowBlur = 0;
       }
 
-      // Draw avatars (perfect measurement from sample)
+      // Avatars (fixed position)
       const avatarSize = 210;
-      drawCircleImage(avatar1, 220, 95, avatarSize);   // left head
-      drawCircleImage(avatar2, 920, 130, avatarSize);  // right head
+      drawCircleImage(avatar1, 220, 95, avatarSize);   // left (male)
+      drawCircleImage(avatar2, 920, 130, avatarSize);  // right (female)
 
       // Names under avatars
       ctx.font = "bold 36px Arial";
@@ -92,13 +108,12 @@ module.exports = {
       ctx.fillText(name1, 220 + avatarSize / 2, 480);
       ctx.fillText(name2, 920 + avatarSize / 2, 480);
 
-      // Love % (center)
+      // Love % above hands
       ctx.font = "bold 42px Arial";
       ctx.fillStyle = "white";
       ctx.shadowColor = "black";
       ctx.shadowBlur = 12;
       ctx.fillText(`${lovePercent}%`, width / 2, 330);
-
       ctx.shadowBlur = 0;
 
       // Save output
