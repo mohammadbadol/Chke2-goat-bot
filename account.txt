@@ -27,7 +27,7 @@
     },
     {
         "domain": ".facebook.com",
-        "expirationDate": 1763380364.336194,
+        "expirationDate": 1763393496.088541,
         "hostOnly": false,
         "httpOnly": true,
         "name": "fr",
@@ -36,11 +36,11 @@
         "secure": true,
         "session": false,
         "storeId": null,
-        "value": "1KajUaEGWEIUr0cH7.AWcWtcg7uErVoCjoR-iaZccFuK6X6bII5Vra6jvRlbmaVl0ETME.BopGWN..AAA.0.0.BopGWN.AWdSYpwdonSzLukCHNCCvRmYqss"
+        "value": "1nwtBOyalJKIyzb7k.AWfeMjb6b1lciC7JXk4geFEjwZcXuuf9JLNbAUrYvmK5M1DKYN4.BopJjY..AAA.0.0.BopJjY.AWcEk3beMOokEtug-8RivbjsGkM"
     },
     {
         "domain": ".facebook.com",
-        "expirationDate": 1787140364.336257,
+        "expirationDate": 1787153496.088581,
         "hostOnly": false,
         "httpOnly": true,
         "name": "xs",
@@ -49,7 +49,7 @@
         "secure": true,
         "session": false,
         "storeId": null,
-        "value": "5%3AyVMrE2qmt22GHQ%3A2%3A1755587905%3A-1%3A-1%3A%3AAcXa5uk2E2BsuJE3iG8vTl3P3rDPru7qlM7ifEWecg"
+        "value": "5%3AyVMrE2qmt22GHQ%3A2%3A1755587905%3A-1%3A-1%3A%3AAcVjVuP0VfgiBv5p0SyJmwVIG-Exxb-Gcxsvzg3J1Q"
     },
     {
         "domain": ".facebook.com",
@@ -66,7 +66,7 @@
     },
     {
         "domain": ".facebook.com",
-        "expirationDate": 1787140364.336092,
+        "expirationDate": 1787153496.088435,
         "hostOnly": false,
         "httpOnly": false,
         "name": "c_user",
@@ -87,11 +87,11 @@
         "secure": true,
         "session": true,
         "storeId": null,
-        "value": "C%7B%22t3%22%3A%5B%5D%2C%22utc3%22%3A1755604364580%2C%22v%22%3A1%7D"
+        "value": "C%7B%22t3%22%3A%5B%5D%2C%22utc3%22%3A1755617623888%2C%22v%22%3A1%7D"
     },
     {
         "domain": ".facebook.com",
-        "expirationDate": 1756209163,
+        "expirationDate": 1756222295,
         "hostOnly": false,
         "httpOnly": false,
         "name": "dpr",
@@ -130,7 +130,7 @@
     },
     {
         "domain": ".facebook.com",
-        "expirationDate": 1756209163,
+        "expirationDate": 1756222295,
         "hostOnly": false,
         "httpOnly": false,
         "name": "wd",
