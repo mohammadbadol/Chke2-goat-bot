@@ -5,65 +5,55 @@ const path = require('path');
 module.exports = {
   config: {
     name: "pastebin",
-    aliases:["past"],
     version: "1.0",
     author: "SANDIP",
     countDown: 5,
     role: 2,
     shortDescription: {
-      en: "Upload files to pastebin and sends link"
+      en: "Upload files to Pastebin and get link"
     },
     longDescription: {
-      en: "This command allows you to upload files to pastebin and sends the link to the file."
+      en: "This command allows you to upload files to Pastebin and get a shareable link."
     },
-    category: "tools",
+    category: "Utility",
     guide: {
-      en: "To use this command, type !pastebin <filename>. The file must be located in the 'cmds' folder."
+      en: "Use: !pastebin <filename>\n(Example: !pastebin mycmd.js)\nThe file must be in the 'cmds' folder."
     }
   },
 
   onStart: async function({ api, event, args }) {
-    const permission = global.GoatBot.config.owner;
-    if (!permission.includes(event.senderID)) {
-      api.sendMessage(
-        "~Who are you bby tumar ki lojjah sorom nai ?!🐐🤌",
-        event.threadID,
-        event.messageID
-      );
-      return;
+    if (!args[0]) {
+      return api.sendMessage("❌ | Please provide a filename!", event.threadID, event.messageID);
     }
+
     const pastebin = new PastebinAPI({
-      api_dev_key: 'LFhKGk5aRuRBII5zKZbbEpQjZzboWDp9',
-      api_user_key: 'LFhKGk5aRuRBII5zKZbbEpQjZzboWDp9',
+      api_dev_key: 'LFhKGk5aRuRBII5zKZbbEpQjZzboWDp9'
+      // api_user_key is optional unless you want to paste under your account
     });
 
-    const fileName = args[0];
-    const filePathWithoutExtension = path.join(__dirname, '..', 'cmds', fileName);
-    const filePathWithExtension = path.join(__dirname, '..', 'cmds', fileName + '.js');
+    const fileName = args[0].replace(/\.js$/, ""); // remove .js if given
+    const filePath = path.join(__dirname, '..', 'cmds', fileName + '.js');
 
-    if (!fs.existsSync(filePathWithoutExtension) && !fs.existsSync(filePathWithExtension)) {
-      return api.sendMessage('File not found!', event.threadID);
+    if (!fs.existsSync(filePath)) {
+      return api.sendMessage("❌ | File not found in cmds folder!", event.threadID, event.messageID);
     }
 
-    const filePath = fs.existsSync(filePathWithoutExtension) ? filePathWithoutExtension : filePathWithExtension;
+    try {
+      const data = fs.readFileSync(filePath, 'utf8');
 
-    fs.readFile(filePath, 'utf8', async (err, data) => {
-      if (err) throw err;
+      const pasteUrl = await pastebin.createPaste({
+        text: data,
+        title: fileName,
+        format: null,
+        privacy: 1 // unlisted
+      });
 
-      const paste = await pastebin
-        .createPaste({
-          text: data,
-          title: fileName,
-          format: null,
-          privacy: 1,
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      const rawUrl = pasteUrl.replace("pastebin.com/", "pastebin.com/raw/");
 
-      const rawPaste = paste.replace("pastebin.com", "pastebin.com/raw");
-
-      api.sendMessage(`File uploaded to Pastebin: ${rawPaste}`, event.threadID);
-    });
-  },
+      api.sendMessage(`✅ | File uploaded to Pastebin:\n${rawUrl}`, event.threadID, event.messageID);
+    } catch (err) {
+      console.error(err);
+      api.sendMessage("❌ | Failed to upload file to Pastebin.", event.threadID, event.messageID);
+    }
+  }
 };
