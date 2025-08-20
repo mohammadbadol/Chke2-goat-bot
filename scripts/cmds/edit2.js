@@ -1,57 +1,110 @@
 const axios = require("axios");
+const fs = require("fs-extra");
+const path = require("path");
+
+const VIP_FILE = path.join(__dirname, "vip.json");
 
 module.exports = {
   config: {
     name: "edit2",
-    aliases: [],
-    role: 0,
-    author: "Arafat",
-    countDown: 5,
-    longDescription: "",
+    version: "1.1.0",
+    author: "IMRAN + VIP Lock",
+    cooldowns: 5,
+    role: 0, // everyone, VIP enforced separately
     category: "image",
-    guide: {
-      en: "/edit2 [your prompt] (reply to an image)"
+    description: "AI image editing using prompt + image or attachment (VIP only)",
+    usages: "edit2 [prompt] + reply image or link",
+    dependencies: { axios: "" },
+    aliases: ["e2"]
+  },
+
+  langs: {
+    en: {
+      notVip: "❌ | You are not a VIP user. Type !vip to see how to get VIP access."
     }
   },
 
-  onStart: async function ({ message, api, args, event }) {
-    if (
-      !event.messageReply ||
-      !event.messageReply.attachments ||
-      !event.messageReply.attachments[0] ||
-      event.messageReply.attachments[0].type !== "photo"
-    ) {
-      return message.reply("📸 | Please reply to an image to edit it.");
-    }
-
-    if (!args[0]) {
-      return message.reply("📝 | Please provide a prompt.");
-    }
-
-    const prompt = encodeURIComponent(args.join(" "));
-    const imgurl = encodeURIComponent(event.messageReply.attachments[0].url);
-    const geditUrl = `https://smfahim.xyz/gedit?prompt=${prompt}&url=${imgurl}`;
-
-    api.setMessageReaction("⏳", event.messageID, () => {}, true);
-
-    message.reply("🔄 | Editing image, please wait...", async (err, info) => {
-      try {
-        const attachment = await global.utils.getStreamFromURL(geditUrl);
-
-        message.reply({
-          body: "✅ | Here is your edited image!",
-          attachment: attachment
-        });
-
-        if (info?.messageID) {
-          message.unsend(info.messageID);
+  onStart: async function ({ api, event, args, message, getLang }) {
+    try {
+      // === VIP check ===
+      let vipDB = [];
+      if (fs.existsSync(VIP_FILE)) {
+        try {
+          vipDB = JSON.parse(fs.readFileSync(VIP_FILE));
+        } catch {
+          vipDB = [];
         }
-
-        api.setMessageReaction("✅", event.messageID, () => {}, true);
-      } catch (error) {
-        message.reply("❌ | There was an error editing your image.");
-        console.error("edit2 error:", error);
       }
-    });
+
+      const senderID = event.senderID;
+      const isVip = vipDB.some(
+        user => user.uid === senderID && (user.expire === 0 || user.expire > Date.now())
+      );
+      if (!isVip) return message.reply(getLang("notVip"));
+      // =================
+
+      // === Image + Prompt handling ===
+      let linkanh = event.messageReply?.attachments?.[0]?.url || null;
+      const prompt = args.join(" ").split("|")[0]?.trim();
+
+      if (!linkanh && args.length > 1) {
+        linkanh = args.join(" ").split("|")[1]?.trim();
+      }
+
+      if (!linkanh || !prompt) {
+        return api.sendMessage(
+          `📸 𝙀𝘿𝙄𝙏•𝙄𝙈𝙂\n━━━━━━━━━━━━━━━━━━━━━━\n` +
+          `⛔ 𝙔𝙤𝙪 𝙢𝙪𝙨𝙩 𝙜𝙞𝙫𝙚 𝙗𝙤𝙩𝙝 𝙖 𝙥𝙧𝙤𝙢𝙥𝙩 𝙖𝙣𝙙 𝙖𝙣 𝙞𝙢𝙖𝙜𝙚!\n\n` +
+          `✨ Example:\n▶ edit2 add cute girlfriend |\n\n` +
+          `🖼 Or Reply to an image:\n▶ edit2 add cute girlfriend`,
+          event.threadID,
+          event.messageID
+        );
+      }
+
+      linkanh = linkanh.replace(/\s/g, "");
+      if (!/^https?:\/\//.test(linkanh)) {
+        return api.sendMessage(
+          "⚠ Invalid image URL!\n🔗 Must start with http:// or https://",
+          event.threadID,
+          event.messageID
+        );
+      }
+
+      const apiUrl = `https://masterapi.fun/api/editimg?prompt=${encodeURIComponent(prompt)}&image=${encodeURIComponent(linkanh)}`;
+
+      // Send waiting message
+      const waitMsg = await api.sendMessage("⏳ Please Wait...", event.threadID);
+
+      const tempPath = path.join(__dirname, "cache", `edited_${event.senderID}.jpg`);
+      const response = await axios({ method: "GET", url: apiUrl, responseType: "stream" });
+
+      const writer = fs.createWriteStream(tempPath);
+      response.data.pipe(writer);
+
+      writer.on("finish", () => {
+        api.sendMessage(
+          {
+            body: `🔍 Prompt: “${prompt}”\n🖼 AI Art is ready! ✨`,
+            attachment: fs.createReadStream(tempPath)
+          },
+          event.threadID,
+          () => {
+            fs.unlinkSync(tempPath); // cleanup
+            api.unsendMessage(waitMsg.messageID);
+          },
+          event.messageID
+        );
+      });
+
+      writer.on("error", (err) => {
+        console.error(err);
+        api.sendMessage("❌ Failed to save the image file.", event.threadID, event.messageID);
+      });
+
+    } catch (error) {
+      console.error(error);
+      api.sendMessage("❌ Failed to generate image. Try again later.", event.threadID, event.messageID);
+    }
   }
 };
