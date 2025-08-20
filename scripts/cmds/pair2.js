@@ -9,54 +9,50 @@ module.exports = {
     category: "love"
   },
 
-  onStart: async function({ api, event, usersData, allUserIDs }) {
+  onStart: async function({ api, event, usersData }) {
     try {
       const senderID = event.senderID;
 
       // Get sender data and gender
       const senderData = await usersData.get(senderID);
-      let senderGender = senderData.gender;
-      if (senderGender === 1) senderGender = "female";
-      else if (senderGender === 2) senderGender = "male";
+      let senderGender;
+      if (senderData.gender === 1) senderGender = "female";
+      else if (senderData.gender === 2) senderGender = "male";
       else senderGender = "unknown";
 
-      // Pick a random user of the opposite gender
-      let possibleIDs;
-      if (senderGender === "female") {
-        possibleIDs = [];
-        for (let uid of allUserIDs) {
-          if (uid === senderID) continue;
-          let u = await usersData.get(uid);
-          if (u.gender === 2) possibleIDs.push(uid);
-        }
-      } else if (senderGender === "male") {
-        possibleIDs = [];
-        for (let uid of allUserIDs) {
-          if (uid === senderID) continue;
-          let u = await usersData.get(uid);
-          if (u.gender === 1) possibleIDs.push(uid);
-        }
-      } else {
-        // Unknown gender → pick any other user
-        possibleIDs = allUserIDs.filter(uid => uid !== senderID);
+      if(senderGender === "unknown") 
+        return api.sendMessage("❌ Could not determine your gender.", event.threadID, event.messageID);
+
+      // Get all participants in the thread
+      const threadInfo = await api.getThreadInfo(event.threadID);
+      let participantIDs = threadInfo.participantIDs.filter(id => id !== senderID);
+
+      // Filter for opposite-gender users only
+      let possibleIDs = [];
+      for (let id of participantIDs) {
+        const user = await usersData.get(id);
+        if (senderGender === "female" && user.gender === 2) possibleIDs.push(id);
+        else if (senderGender === "male" && user.gender === 1) possibleIDs.push(id);
       }
 
-      if (!possibleIDs.length) return api.sendMessage("❌ No suitable user found to create a pair.", event.threadID, event.messageID);
+      // If no opposite-gender user, show error
+      if (!possibleIDs.length) 
+        return api.sendMessage("❌ No opposite-gender user found to create a pair.", event.threadID, event.messageID);
 
-      // Pick one random user
+      // Pick random opposite-gender user
       const id2 = possibleIDs[Math.floor(Math.random() * possibleIDs.length)];
       let id1 = senderID;
 
-      let userData1 = await usersData.get(id1);
-      let userData2 = await usersData.get(id2);
-
+      // Get user data
+      const userData1 = await usersData.get(id1);
+      const userData2 = await usersData.get(id2);
       let name1 = userData1.name;
       let name2 = userData2.name;
 
       let avatarURL1 = await usersData.getAvatarUrl(id1);
       let avatarURL2 = await usersData.getAvatarUrl(id2);
 
-      // Swap if female sender so she appears on the right side
+      // Female sender → right, male sender → left
       if (senderGender === "female") {
         [id1, id2] = [id2, id1];
         [name1, name2] = [name2, name1];
@@ -75,7 +71,7 @@ module.exports = {
       const canvas = createCanvas(width, height);
       const ctx = canvas.getContext('2d');
 
-      const background = await loadImage("https://files.catbox.moe/rfv1fa.jpg"); 
+      const background = await loadImage("https://files.catbox.moe/rfv1fa.jpg");
       const avatar1 = await loadImage(avatarURL1);
       const avatar2 = await loadImage(avatarURL2);
 
@@ -101,8 +97,8 @@ module.exports = {
       }
 
       const avatarSize = 210;
-      drawCircleImage(avatar1, 220, 95, avatarSize);
-      drawCircleImage(avatar2, 920, 130, avatarSize);
+      drawCircleImage(avatar1, 220, 95, avatarSize); // left
+      drawCircleImage(avatar2, 920, 130, avatarSize); // right
 
       ctx.font = "bold 36px Arial";
       ctx.textAlign = "center";
@@ -114,7 +110,7 @@ module.exports = {
 
       ctx.font = "bold 42px Arial";
       ctx.fillStyle = "white";
-      ctx.shadowColor = "white";
+      ctx.shadowColor = "blue";
       ctx.shadowBlur = 12;
       ctx.fillText(`${lovePercent}%`, width / 2, 330);
       ctx.shadowBlur = 0;
