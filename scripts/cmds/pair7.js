@@ -13,15 +13,15 @@ module.exports = {
     try {
       const senderID = event.senderID;
 
-      // Get sender data and gender
+      // Get sender data and gender safely
       const senderData = await usersData.get(senderID);
-      let senderGender;
-      if (senderData.gender === 1) senderGender = "female";
-      else if (senderData.gender === 2) senderGender = "male";
-      else senderGender = "unknown";
+      let senderGender = "unknown";
 
-      if(senderGender === "unknown") 
-        return api.sendMessage("❌ Could not determine your gender.", event.threadID, event.messageID);
+      if (senderData) {
+        const g = (senderData.gender || "").toString().toLowerCase();
+        if (g === "1" || g === "female") senderGender = "female";
+        else if (g === "2" || g === "male") senderGender = "male";
+      }
 
       // Get all participants in the thread
       const threadInfo = await api.getThreadInfo(event.threadID);
@@ -31,23 +31,29 @@ module.exports = {
       let possibleIDs = [];
       for (let id of participantIDs) {
         const user = await usersData.get(id);
-        if (senderGender === "female" && user.gender === 2) possibleIDs.push(id);
-        else if (senderGender === "male" && user.gender === 1) possibleIDs.push(id);
+        if (!user) continue;
+        const g = (user.gender || "").toString().toLowerCase();
+        if (senderGender === "female" && (g === "2" || g === "male")) possibleIDs.push(id);
+        else if (senderGender === "male" && (g === "1" || g === "female")) possibleIDs.push(id);
       }
 
-      // If no opposite-gender user, show error
-      if (!possibleIDs.length) 
-        return api.sendMessage("❌ No opposite-gender user found to create a pair.", event.threadID, event.messageID);
+      // If no opposite-gender user found → fallback to any random participant
+      if (!possibleIDs.length) possibleIDs = participantIDs;
 
-      // Pick random opposite-gender user
+      // If still empty (thread has only 1 person), show error
+      if (!possibleIDs.length) {
+        return api.sendMessage("❌ Not enough users in this chat to create a pair.", event.threadID, event.messageID);
+      }
+
+      // Pick random partner
       const id2 = possibleIDs[Math.floor(Math.random() * possibleIDs.length)];
       let id1 = senderID;
 
       // Get user data
       const userData1 = await usersData.get(id1);
       const userData2 = await usersData.get(id2);
-      let name1 = userData1.name;
-      let name2 = userData2.name;
+      let name1 = userData1?.name || "User 1";
+      let name2 = userData2?.name || "User 2";
 
       let avatarURL1 = await usersData.getAvatarUrl(id1);
       let avatarURL2 = await usersData.getAvatarUrl(id2);
@@ -115,7 +121,7 @@ module.exports = {
       ctx.fillText(`${lovePercent}%`, width / 2, 330);
       ctx.shadowBlur = 0;
 
-      const outputPath = path.join(__dirname, 'pair4_output.png');
+      const outputPath = path.join(__dirname, 'pair7_output.png');
       const out = fs.createWriteStream(outputPath);
       const stream = canvas.createPNGStream();
       stream.pipe(out);
