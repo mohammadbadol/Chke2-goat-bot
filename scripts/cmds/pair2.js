@@ -4,7 +4,7 @@ const path = require("path");
 
 module.exports = {
   config: {
-    name: "pair7",
+    name: "pair2",
     author: 'Nyx x Ariyan',
     category: "TOOLS"
   },
