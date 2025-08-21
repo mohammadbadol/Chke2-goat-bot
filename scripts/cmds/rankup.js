@@ -52,7 +52,7 @@ module.exports = {
 
 			try {
 				// Upload to Catbox
-				const res = await axios.post("https://catbox.moe/user/api.php", null, {
+				const res = await axios.post("https://files.catbox.moe/bl06cm.jpg", null, {
 					params: { reqtype: "urlupload", url: file }
 				});
 
