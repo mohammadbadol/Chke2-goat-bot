@@ -1,71 +1,82 @@
 const axios = require('axios');
 const jimp = require("jimp");
 const fs = require("fs");
+const path = require("path");
 
 module.exports = {
   config: {
     name: "toilet",
     aliases: ["toilet"],
-    version: "2.0",
-    author: "♡ 𝐻𝐴𝑆𝐴𝑁 ♡ + Fixed by Arijit",
+    version: "3.0",
+    author: "Arijit",
     countDown: 5,
     role: 0,
-    shortDescription: "face on toilet",
-    longDescription: "Overlay user's avatar onto toilet meme",
+    shortDescription: "Face on toilet meme",
+    longDescription: "Overlay a user's avatar onto a toilet meme image",
     category: "fun",
-    guide: "{pn} [mention someone or reply a message]",
+    guide: "{pn} [mention someone or reply to a message]",
   },
 
   onStart: async function ({ message, event }) {
-    const uid1 = Object.keys(event.mentions || {})[0];
-    const uid2 = event.messageReply ? event.messageReply.senderID : null; 
-    const replyUser = uid1 || uid2;
+    try {
+      const mentions = event.mentions || {};
+      const targetID = Object.keys(mentions)[0] || (event.messageReply && event.messageReply.senderID) || event.senderID;
+      const senderID = event.senderID;
 
-    if (!replyUser) {
-      return message.reply("🚽 Please mention someone or reply to a message.");
-    }
-
-    // 🚫 Owner protection (your UID)
-    if (replyUser === "100069254151118") {
-      return message.reply("🚫 You deserve this, not my owner! 😙");
-    }
-
-    bal(replyUser).then(ptth => {
-      if (ptth) {
-        message.reply({
-          body: "You Deserve This Place 🙂✌",
-          attachment: fs.createReadStream(ptth),
-        }, () => {
-          fs.unlinkSync(ptth); // cleanup temp file
-        });
-      } else {
-        message.reply("❌ An error occurred while processing the image.");
+      // 🚫 Owner protection: only block if someone else tries to toilet you
+      if (targetID === "100069254151118" && senderID !== "100069254151118") {
+        return message.reply("🚫 You deserve this, not my owner! 😙");
       }
-    });
-  },
-};
 
-async function bal(userID) {
-  try {
-    // === Download avatar from Graph API ===
-    let avatarURL = `https://graph.facebook.com/${userID}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
-    let avatar = await jimp.read(avatarURL);
-    avatar = avatar.resize(400, 400).circle();
+      // Prepare temp folder
+      const tempDir = path.join(__dirname, "temp_toilet");
+      if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
 
-    // === Toilet background ===
-    let img = await jimp.read("https://i.imgur.com/sZW2vlz.png");
-    img.resize(1080, 1350);
+      const avatarPath = path.join(tempDir, `avatar_${targetID}.png`);
+      const outputPath = path.join(tempDir, `toilet_${targetID}.png`);
 
-    // === Position of avatar ===
-    img.composite(avatar, 310, 670);
+      // Download avatar from Graph API
+      const avatarResp = await axios.get(
+        `https://graph.facebook.com/${targetID}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`,
+        { responseType: "arraybuffer" }
+      );
+      fs.writeFileSync(avatarPath, avatarResp.data);
 
-    // === Save result ===
-    let pth = `toilet_${userID}.png`;
-    await img.writeAsync(pth);
+      // Load images
+      const avatar = await jimp.read(avatarPath);
+      const bg = await jimp.read("https://i.imgur.com/sZW2vlz.png"); // Toilet meme
 
-    return pth;
-  } catch (error) {
-    console.error("🚽 Error processing image:", error);
-    return null;
+      // Resize and circle crop
+      avatar.resize(400, 400).circle();
+      bg.resize(1080, 1350);
+
+      // Composite avatar onto toilet
+      bg.composite(avatar, 310, 670);
+
+      // Save final image
+      await bg.writeAsync(outputPath);
+
+      // Get user info
+      const userInfo = await message.getUserInfo(targetID);
+      const name = userInfo?.name || "Someone";
+
+      // Send result
+      await message.reply(
+        {
+          body: `🤣 ${name} is now enjoying the toilet meme! 🚽`,
+          mentions: [{ tag: name, id: targetID }],
+          attachment: fs.createReadStream(outputPath),
+        },
+        () => {
+          // Cleanup
+          fs.unlinkSync(avatarPath);
+          fs.unlinkSync(outputPath);
+        }
+      );
+
+    } catch (err) {
+      console.error("Toilet command error:", err);
+      return message.reply("❌ Something went wrong while generating the toilet image.");
+    }
   }
-}
+};
