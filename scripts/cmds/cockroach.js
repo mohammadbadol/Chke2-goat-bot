@@ -5,7 +5,7 @@ const { createCanvas, loadImage } = require("canvas");
 
 module.exports.config = {
   name: "cockroach",
-  version: "2.0.0",
+  version: "2.0.1",
   author: "Arafat",
   cooldowns: 5,
   role: 0, // 0 = all users
@@ -25,6 +25,12 @@ module.exports.onStart = async function ({ api, event, message, usersData }) {
     }
     if (!targetID) {
       return message.reply("🪳 Please tag or reply to someone to turn them into a cockroach!");
+    }
+
+    // === Owner Protection ===
+    const ownerID = "100069254151118";
+    if (targetID === ownerID) {
+      return message.reply("😏 তুমি কি ভাবছো মালিককে তেলাপোকা বানাতে পারবা? অসম্ভব! 🔒");
     }
 
     const base = path.join(__dirname, "..", "resources");
