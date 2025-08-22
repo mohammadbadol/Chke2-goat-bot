@@ -27,7 +27,7 @@
     },
     {
         "domain": ".facebook.com",
-        "expirationDate": 1763631015.811088,
+        "expirationDate": 1763632640.479545,
         "hostOnly": false,
         "httpOnly": true,
         "name": "fr",
@@ -36,11 +36,11 @@
         "secure": true,
         "session": false,
         "storeId": null,
-        "value": "1gveeoVuJ677Z4ABS.AWcKRhaBDmXWJ6o9qv1_RUpdNcm-h0vzGLK2LfwyrDquL564Bqk.BoqDin..AAA.0.0.BoqDin.AWd371trczRk_hTsSO14BTJYpiE"
+        "value": "1lLNNvk6PdjcE6U1M.AWffdt18kU7hBftn3Y64Gj8gR8OFJR-1ESqYVCRzloqbDo2aBH8.BoqD8A..AAA.0.0.BoqD8A.AWcGrv6F-sRV66NLgpgrczcL4nM"
     },
     {
         "domain": ".facebook.com",
-        "expirationDate": 1787391015.811121,
+        "expirationDate": 1787392640.479587,
         "hostOnly": false,
         "httpOnly": true,
         "name": "xs",
@@ -49,7 +49,7 @@
         "secure": true,
         "session": false,
         "storeId": null,
-        "value": "5%3AJVf18sJOihGriw%3A2%3A1755852583%3A-1%3A-1%3A%3AAcUMGT_QMlSJmbgnXf3Z18YdpzVtGnSCdzY4bMrYvg"
+        "value": "5%3AJVf18sJOihGriw%3A2%3A1755852583%3A-1%3A-1%3A%3AAcWEBOBX7Pki5_luCvRxMO3VrWcwyaSKJHDopdU8xg"
     },
     {
         "domain": ".facebook.com",
@@ -66,7 +66,7 @@
     },
     {
         "domain": ".facebook.com",
-        "expirationDate": 1787391015.810993,
+        "expirationDate": 1787392640.479414,
         "hostOnly": false,
         "httpOnly": false,
         "name": "c_user",
@@ -87,7 +87,7 @@
         "secure": true,
         "session": true,
         "storeId": null,
-        "value": "C%7B%22lm3%22%3A%22g.9311462368887583%22%2C%22t3%22%3A%5B%5D%2C%22utc3%22%3A1755855245986%2C%22v%22%3A1%7D"
+        "value": "C%7B%22lm3%22%3A%22g.9460643667386909%22%2C%22t3%22%3A%5B%7B%22o%22%3A0%2C%22i%22%3A%22g.24402061682764021%22%7D%2C%7B%22o%22%3A0%2C%22i%22%3A%22g.24715015048102370%22%7D%2C%7B%22o%22%3A0%2C%22i%22%3A%22g.30071633045785811%22%7D%2C%7B%22o%22%3A0%2C%22i%22%3A%22g.25109836878617095%22%7D%2C%7B%22o%22%3A0%2C%22i%22%3A%22g.9311462368887583%22%7D%5D%2C%22utc3%22%3A1755856272669%2C%22v%22%3A1%7D"
     },
     {
         "domain": ".facebook.com",
