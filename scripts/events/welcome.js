@@ -1,4 +1,6 @@
-const { getTime, drive } = global.utils;
+const { drive } = global.utils;
+const moment = require("moment-timezone");
+
 if (!global.temp.welcomeEvent)
 	global.temp.welcomeEvent = {};
 
@@ -17,20 +19,25 @@ function toBoldUnicode(name) {
 	return name.split('').map(char => boldAlphabet[char] || char).join('');
 }
 
+// session detector (Morning, Noon, Afternoon, Evening, Night)
+function getSession(hour) {
+	if (hour >= 5 && hour < 12) return "Morning";
+	if (hour >= 12 && hour < 15) return "Noon";
+	if (hour >= 15 && hour < 18) return "Afternoon";
+	if (hour >= 18 && hour < 21) return "Evening";
+	return "Night";
+}
+
 module.exports = {
 	config: {
 		name: "welcome",
-		version: "3.0",
+		version: "3.2",
 		author: "Arijit",
 		category: "events"
 	},
 
 	langs: {
 		en: {
-			session1: " Morning",
-			session2: " Noon",
-			session3: " Afternoon",
-			session4: " Evening",
 			multiple1: "you",
 			multiple2: "all of you",
 			defaultWelcomeMessage:
@@ -42,14 +49,14 @@ module.exports = {
 𝗜 𝗵𝗼𝗽𝗲 𝘆𝗼𝘂 𝘄𝗶𝗹𝗹 𝗳𝗼𝗹𝗹𝗼𝘄 𝗼𝘂𝗿 𝗮𝗹𝗹 𝗚𝗿𝗼𝘂𝗽 𝗿𝘂𝗹𝗲𝘀 ♻  
 
 ╭➢ 𝗢𝘄𝗻𝗲𝗿: 𝐀 𝐑 𝐈 𝐉 𝐈 𝐓  
-╰➢ 𝗙𝗯: https://fb.com/arijit016`
+╰➢ 𝗙𝗯: https://fb.com/arijit016
+🕒(🇮🇳):{timeIND} , 🕒(🇧🇩):{timeBD} `
 		}
 	},
 
 	onStart: async ({ threadsData, message, event, api, getLang }) => {
 		if (event.logMessageType == "log:subscribe")
 			return async function () {
-				const hours = getTime("HH");
 				const { threadID } = event;
 				const { nickNameBot = "MyBot" } = global.GoatBot.config;
 				const dataAddedParticipants = event.logMessageData.addedParticipants;
@@ -90,20 +97,26 @@ module.exports = {
 
 					let { welcomeMessage = getLang("defaultWelcomeMessage") } = threadData.data;
 
-					// Apply bold style
+					// styled names
 					const styledUser = toBoldUnicode(userName.join(", "));
 					const styledThread = toBoldUnicode(threadName);
 
+					// time for IND & BD
+					const timeIND = moment.tz("Asia/Kolkata").format("hh:mm A");
+					const timeBD  = moment.tz("Asia/Dhaka").format("hh:mm A");
+
+					// session (based on IND time)
+					const hourIND = parseInt(moment.tz("Asia/Kolkata").format("HH"));
+					let sessionText = toBoldUnicode(getSession(hourIND));
+
+					// replace placeholders
 					welcomeMessage = welcomeMessage
 						.replace(/\{userName\}/g, styledUser)
 						.replace(/\{boxName\}|\{threadName\}/g, styledThread)
 						.replace(/\{multiple\}/g, multiple ? getLang("multiple2") : getLang("multiple1"))
-						.replace(/\{session\}/g,
-							hours <= 10 ? getLang("session1")
-							: hours <= 12 ? getLang("session2")
-							: hours <= 18 ? getLang("session3")
-							: getLang("session4")
-						);
+						.replace(/\{session\}/g, sessionText)
+						.replace(/\{timeIND\}/g, toBoldUnicode(timeIND))
+						.replace(/\{timeBD\}/g, toBoldUnicode(timeBD));
 
 					const form = { body: welcomeMessage, mentions };
 
