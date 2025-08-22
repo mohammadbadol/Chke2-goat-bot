@@ -60,6 +60,6 @@ module.exports = {
 
     const selfData = await usersData.get(event.senderID);
     const selfBalance = selfData?.money || 0;
-    return message.reply(`${toBoldUnicode("Baby, Your balance")} ${formatAmount(selfBalance)}`);
+    return message.reply(`${toBoldUnicode("Baby, Your balance :")} ${formatAmount(selfBalance)}`);
   }
 };
