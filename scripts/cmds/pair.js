@@ -25,11 +25,9 @@ module.exports = {
         return name.split('').map(char => boldAlphabet[char] || char).join('');
       }
 
-      // Get all members in the group
       const threadInfo = await api.getThreadInfo(event.threadID);
       const participants = threadInfo.participantIDs;
 
-      // Separate users by gender
       let males = [];
       let females = [];
 
@@ -43,22 +41,31 @@ module.exports = {
         } catch (e) { continue; }
       }
 
-      if (males.length === 0 || females.length === 0) {
-        return api.sendMessage(
-          "❌ Not enough male & female members in this group to create a valid pair.",
-          event.threadID,
-          event.messageID
-        );
+      const sender = await usersData.get(event.senderID);
+      if (!sender || !sender.gender) {
+        return api.sendMessage("❌ Cannot detect your gender. Please update your profile.", event.threadID, event.messageID);
       }
 
-      // Randomly pick one male and one female
-      const male = males[Math.floor(Math.random() * males.length)];
-      const female = females[Math.floor(Math.random() * females.length)];
+      let male, female;
+      if (sender.gender === 2) {
+        male = sender;
+        if (females.length === 0) {
+          return api.sendMessage("❌ No female members found in this group to pair with you.", event.threadID, event.messageID);
+        }
+        female = females[Math.floor(Math.random() * females.length)];
+      } else if (sender.gender === 1) {
+        female = sender;
+        if (males.length === 0) {
+          return api.sendMessage("❌ No male members found in this group to pair with you.", event.threadID, event.messageID);
+        }
+        male = males[Math.floor(Math.random() * males.length)];
+      } else {
+        return api.sendMessage("❌ Unsupported gender type.", event.threadID, event.messageID);
+      }
 
       const name1 = male.name;
       const name2 = female.name;
 
-      // Convert to bold
       const styledName1 = toBoldUnicode(name1);
       const styledName2 = toBoldUnicode(name2);
 
@@ -77,14 +84,12 @@ module.exports = {
       const canvas = createCanvas(width, height);
       const ctx = canvas.getContext('2d');
 
-      // Background
       const background = await loadImage("https://files.catbox.moe/rfv1fa.jpg");
       const avatar1 = await loadImage(avatarURL1);
       const avatar2 = await loadImage(avatarURL2);
 
       ctx.drawImage(background, 0, 0, width, height);
 
-      // Circle avatar drawer
       function drawCircleImage(img, x, y, size) {
         ctx.save();
         ctx.beginPath();
@@ -104,12 +109,10 @@ module.exports = {
         ctx.shadowBlur = 0;
       }
 
-      // Avatars (male left, female right)
       const avatarSize = 210;
-      drawCircleImage(avatar1, 220, 95, avatarSize);   // male
-      drawCircleImage(avatar2, 920, 130, avatarSize);  // female
+      drawCircleImage(avatar1, 220, 95, avatarSize);
+      drawCircleImage(avatar2, 920, 130, avatarSize);
 
-      // Names
       ctx.font = "bold 36px Arial";
       ctx.textAlign = "center";
       ctx.fillStyle = "yellow";
@@ -118,16 +121,14 @@ module.exports = {
       ctx.fillText(styledName1, 220 + avatarSize / 2, 480);
       ctx.fillText(styledName2, 920 + avatarSize / 2, 480);
 
-      // Love %
       ctx.font = "bold 42px Arial";
       ctx.fillStyle = "white";
-      ctx.shadowColor = "black";
+      ctx.shadowColor = "blue";
       ctx.shadowBlur = 12;
       ctx.fillText(`${lovePercent}%`, width / 2, 330);
       ctx.shadowBlur = 0;
 
-      // Save output
-      const outputPath = path.join(__dirname, 'pair4_output.png');
+      const outputPath = path.join(__dirname, 'pair_output.png');
       const out = fs.createWriteStream(outputPath);
       const stream = canvas.createPNGStream();
       stream.pipe(out);
