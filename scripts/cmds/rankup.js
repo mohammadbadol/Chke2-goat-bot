@@ -1,130 +1,88 @@
-const deltaNext = global.GoatBot.configCommands.envCommands.rank.deltaNext;
-const expToLevel = exp => Math.floor((1 + Math.sqrt(1 + 8 * exp / deltaNext)) / 2);
-const { drive } = global.utils;
 const axios = require("axios");
+const fs = require("fs-extra");
+const { drive } = global.utils;
 
 module.exports = {
-	config: {
-		name: "rankup",
-		version: "2.0",
-		author: "Arijit",
-		countDown: 5,
-		role: 0,
-		description: {
-			en: "Turn on/off rankup notification + set custom background"
-		},
-		category: "rank",
-		guide: {
-			en: "{pn} on | off\n{pn} setbg (reply image/video)\n{pn} delbg"
-		},
-		envConfig: {
-			deltaNext: 5
-		}
-	},
+  config: {
+    name: "rankup",
+    version: "2.0",
+    author: "Arijit",
+    countDown: 5,
+    role: 0,
+    shortDescription: "Rank-up notification system",
+    longDescription: "Sends a rank-up card when user levels up. Supports custom backgrounds.",
+    category: "rank"
+  },
 
-	langs: {
-		en: {
-			syntaxError: "⚠ Use: {pn} on/off/setbg/delbg",
-			turnedOn: "✅ Rankup notification turned ON",
-			turnedOff: "❌ Rankup notification turned OFF",
-			notiMessage: "🎉 Congratulations! You reached level %1",
-			noAttachment: "⚠ Reply to an image/video/gif to set as background.",
-			bgSet: "✅ Custom rankup background set!\n📌 {url}",
-			bgRemoved: "🗑 Rankup background removed."
-		}
-	},
+  onStart: async function ({ args, threadsData, message, event }) {
+    const threadID = event.threadID;
+    let data = await threadsData.get(threadID, "data") || {};
 
-	onStart: async function ({ message, event, threadsData, args, getLang }) {
-		if (!args[0]) return message.reply(getLang("syntaxError"));
+    if (!args[0]) {
+      return message.reply("⚙️ Usage: rankup [on|off|setbg|delbg]");
+    }
 
-		// Enable / Disable
-		if (["on", "off"].includes(args[0])) {
-			await threadsData.set(event.threadID, args[0] == "on", "settings.sendRankupMessage");
-			return message.reply(args[0] == "on" ? getLang("turnedOn") : getLang("turnedOff"));
-		}
+    switch (args[0]) {
+      case "on":
+        data.rankup = { ...data.rankup, enabled: true };
+        await threadsData.set(threadID, data, "data");
+        return message.reply("✅ Rank-up messages enabled");
 
-		// Set custom background
-		if (args[0] == "setbg") {
-			if (!event.messageReply?.attachments?.length)
-				return message.reply(getLang("noAttachment"));
+      case "off":
+        data.rankup = { ...data.rankup, enabled: false };
+        await threadsData.set(threadID, data, "data");
+        return message.reply("❌ Rank-up messages disabled");
 
-			const file = event.messageReply.attachments[0].url;
+      case "setbg":
+        if (event.messageReply?.attachments?.[0]) {
+          const fileUrl = event.messageReply.attachments[0].url;
+          data.rankup = { ...data.rankup, background: fileUrl };
+          await threadsData.set(threadID, data, "data");
+          return message.reply("🖼️ Rank-up background set.");
+        }
+        return message.reply("⚠️ Reply to an image to set background.");
 
-			try {
-				// Upload to Catbox
-				const res = await axios.post("https://files.catbox.moe/bl06cm.jpg", null, {
-					params: { reqtype: "urlupload", url: file }
-				});
+      case "delbg":
+        if (data.rankup?.background) {
+          delete data.rankup.background;
+          await threadsData.set(threadID, data, "data");
+          return message.reply("🗑️ Rank-up background removed.");
+        }
+        return message.reply("⚠️ No background set yet.");
+    }
+  },
 
-				const catboxLink = res.data.trim();
-				if (!catboxLink.startsWith("http")) 
-					return message.reply("❌ Upload failed, try again.");
+  onChat: async function ({ event, usersData, threadsData, message }) {
+    const { senderID, threadID } = event;
+    const data = await threadsData.get(threadID, "data");
+    if (!data.rankup?.enabled) return;
 
-				// Save link
-				await threadsData.set(event.threadID, { attachments: [catboxLink] }, "data.rankup");
+    const userInfo = await usersData.get(senderID);
+    const oldLevel = userInfo.level || 1;
+    const expToNext = (oldLevel + 1) * 100;
 
-				return message.reply(getLang("bgSet").replace("{url}", catboxLink));
-			} catch (e) {
-				console.error(e);
-				return message.reply("❌ Error uploading to Catbox.");
-			}
-		}
+    if (userInfo.exp >= expToNext) {
+      const newLevel = oldLevel + 1;
+      userInfo.level = newLevel;
+      await usersData.set(senderID, userInfo);
 
-		// Delete background
-		if (args[0] == "delbg") {
-			await threadsData.set(event.threadID, { attachments: [] }, "data.rankup");
-			return message.reply(getLang("bgRemoved"));
-		}
+      let body = `🎉 Congratulations ${userInfo.name}!\nYou leveled up to **Level ${newLevel}** ✨`;
 
-		return message.reply(getLang("syntaxError"));
-	},
+      let attachment = [];
+      if (data.rankup.background) {
+        try {
+          const file = await drive.getFile(data.rankup.background, "stream");
+          attachment.push(file);
+        } catch (err) {
+          console.error(err);
+        }
+      }
 
-	onChat: async function ({ threadsData, usersData, event, message, getLang }) {
-		const threadData = await threadsData.get(event.threadID);
-		const sendRankupMessage = threadData?.settings?.sendRankupMessage;
-		if (!sendRankupMessage) return;
-
-		const { exp } = await usersData.get(event.senderID);
-		const currentLevel = expToLevel(exp);
-
-		// Rankup check
-		if (currentLevel > expToLevel(exp - 1)) {
-			let customMessage = await threadsData.get(event.threadID, "data.rankup.message");
-			let isTag = false;
-			let userData;
-			const formMessage = {};
-
-			if (customMessage) {
-				userData = await usersData.get(event.senderID);
-				customMessage = customMessage
-					.replace(/{oldRank}/g, currentLevel - 1)
-					.replace(/{currentRank}/g, currentLevel);
-
-				if (customMessage.includes("{userNameTag}")) {
-					isTag = true;
-					customMessage = customMessage.replace(/{userNameTag}/g, `@${userData.name}`);
-				} else {
-					customMessage = customMessage.replace(/{userName}/g, userData.name);
-				}
-				formMessage.body = customMessage;
-			} else {
-				formMessage.body = getLang("notiMessage").replace("%1", currentLevel);
-			}
-
-			// Custom background attach
-			if (threadData.data.rankup?.attachments?.length > 0) {
-				formMessage.attachment = [await drive.getFile(threadData.data.rankup.attachments[0], "stream")];
-			}
-
-			// Mentions
-			if (isTag && userData) {
-				formMessage.mentions = [{
-					tag: `@${userData.name}`,
-					id: event.senderID
-				}];
-			}
-
-			message.reply(formMessage);
-		}
-	}
+      return message.reply({
+        body,
+        mentions: [{ tag: userInfo.name, id: senderID }],
+        attachment
+      });
+    }
+  }
 };
