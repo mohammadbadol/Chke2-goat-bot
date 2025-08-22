@@ -1,5 +1,4 @@
 const Canvas = require("canvas");
-const axios = require("axios");
 const fs = require("fs-extra");
 const path = require("path");
 
@@ -12,12 +11,12 @@ if (fs.existsSync(fontPath)) {
 module.exports = {
   config: {
     name: "rank",
-    version: "3.1",
+    version: "3.3",
     author: "Arijit",
     countDown: 5,
     role: 0,
     shortDescription: "Show user rank card",
-    longDescription: "Displays glowing neon rank card with user stats and random colors",
+    longDescription: "Displays glowing neon rank card with user stats and fixed colors",
     category: "rank",
   },
 
@@ -31,21 +30,24 @@ module.exports = {
       const level = userInfo.level || 1;
       const messages = userInfo.messages || 0;
       const money = userInfo.money || 0;
-      const gender = userInfo.gender || "Unknown";
+      const genderNum = userInfo.gender || 0;
       const username = userInfo.username || "unknown";
+      const name = userInfo.name || username || "Unknown";
       const expRank = userInfo.expRank || "N/A";
       const moneyRank = userInfo.moneyRank || "N/A";
 
-      // Neon color set
-      const neonColors = ["#ff4757", "#1e90ff", "#2ed573", "#ffa502", "#e84393", "#00cec9", "#ffeaa7"];
-      const neon = neonColors[Math.floor(Math.random() * neonColors.length)];
+      // Gender mapping
+      const gender = genderNum == 1 ? "Male" : genderNum == 2 ? "Female" : "Unknown";
 
-      // Fetch avatar
+      // Color set (only 5 fixed colors)
+      const fixedColors = ["#ff4757", "#8B4513", "#9b59b6", "#1e90ff", "#ffa502"]; 
+      const neon = fixedColors[Math.floor(Math.random() * fixedColors.length)];
+
+      // Load avatar directly from FB URL
       let avatar;
       try {
         const avatarURL = `https://graph.facebook.com/${uid}/picture?width=512&height=512`;
-        const res = await axios.get(avatarURL, { responseType: "arraybuffer" });
-        avatar = await Canvas.loadImage(res.data);
+        avatar = await Canvas.loadImage(avatarURL);
       } catch {
         avatar = await Canvas.loadImage("https://i.imgur.com/3GvwNBf.png");
       }
@@ -68,7 +70,9 @@ module.exports = {
       ctx.shadowColor = neon;
       ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
 
-      ctx.shadowBlur = 0; // reset
+      // Reset shadow
+      ctx.shadowBlur = 0;
+      ctx.shadowColor = "transparent";
 
       // Avatar circle
       ctx.save();
@@ -83,7 +87,7 @@ module.exports = {
       ctx.fillStyle = neon;
       ctx.font = "50px BeVietnamPro, sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText(userInfo.name || "Unknown", canvas.width / 2, 300);
+      ctx.fillText(name, canvas.width / 2, 300);
 
       // Stats
       ctx.fillStyle = "#fff";
@@ -97,7 +101,7 @@ module.exports = {
 
       // Left column
       ctx.fillText(`🆔 User ID: ${uid}`, leftX, y); y += gap;
-      ctx.fillText(`🏷️ Nickname: ${userInfo.name || "Unknown"}`, leftX, y); y += gap;
+      ctx.fillText(`🏷️ Nickname: ${name}`, leftX, y); y += gap;
       ctx.fillText(`👫 Gender: ${gender}`, leftX, y); y += gap;
       ctx.fillText(`🌐 Username: ${username}`, leftX, y); y += gap;
       ctx.fillText(`⭐ Level: ${level}`, leftX, y);
@@ -124,7 +128,7 @@ module.exports = {
       return message.reply({
         body: "✨ Your Rank Card",
         attachment: fs.createReadStream(imgPath)
-      });
+      }).then(() => fs.unlinkSync(imgPath));
 
     } catch (err) {
       console.error("Rank card error:", err);
