@@ -5,7 +5,7 @@ if (!global.temp.welcomeEvent)
 module.exports = {
 	config: {
 		name: "welcome",
-		version: "2.1",
+		version: "2.2",
 		author: "Arijit",
 		category: "events"
 	},
@@ -16,36 +16,38 @@ module.exports = {
 			session2: "☀️ noon",
 			session3: "🌇 afternoon",
 			session4: "🌙 evening",
-			welcomeMessage:
-				"✨ Thank you for inviting me to this group!\n\n🤖 Bot Name: {botName}\n📌 Bot Prefix: %1\n💡 Type %1help to explore all commands.",
 			multiple1: "you",
 			multiple2: "all of you",
 			defaultWelcomeMessage:
-				"━━━━━━━━━━━━━━━━━━━\n" +
-				"🎀 | 𝐖𝐞𝐥𝐜𝐨𝐦𝐞 ✨\n\n" +
-				"👤 {userName}\n" +
-				"📌 Group: {boxName}\n" +
-				"🤖 Bot: {botName}\n\n" +
-				"💎 Wishing {multiple} a wonderful {session}!\n" +
-				"━━━━━━━━━━━━━━━━━━━"
+				`➢ 𝗪𝗲𝗹𝗰𝗼𝗺𝗲 ✦ {userName} 🌸
+
+➢ 𝗧𝗼 𝗼𝘂𝗿 𝗚𝗿𝗼𝘂𝗽 {boxName} 🐱🎀
+
+╭➢ {session} 😊
+│ 
+╰➢ 𝗜 𝗵𝗼𝗽𝗲 {multiple} 𝘄𝗶𝗹𝗹 𝗳𝗼𝗹𝗹𝗼𝘄 𝗼𝘂𝗿 𝗮𝗹𝗹 𝗚𝗿𝗼𝘂𝗽 𝗿𝘂𝗹𝗲𝘀 ♻ 
+
+╭➢ 𝗢𝘄𝗻𝗲𝗿: 𝐀 𝐑 𝐈 𝐉 𝐈 𝐓⚡
+╰➢ 𝗙𝗯: [ https://fb.com/arijit016 ] 🌐`
 		},
 		vi: {
 			session1: "🌅 buổi sáng",
 			session2: "☀️ buổi trưa",
 			session3: "🌇 buổi chiều",
 			session4: "🌙 buổi tối",
-			welcomeMessage:
-				"✨ Cảm ơn bạn đã mời tôi vào nhóm!\n\n🤖 Tên bot: {botName}\n📌 Prefix bot: %1\n💡 Gõ %1help để xem danh sách lệnh.",
 			multiple1: "bạn",
 			multiple2: "các bạn",
 			defaultWelcomeMessage:
-				"━━━━━━━━━━━━━━━━━━━\n" +
-				"🎀 | 𝐂𝐡𝐚̀𝐨 𝐦𝐮̛̀𝐧𝐠 ✨\n\n" +
-				"👤 {userName}\n" +
-				"📌 Nhóm: {boxName}\n" +
-				"🤖 Bot: {botName}\n\n" +
-				"💎 Chúc {multiple} có một {session} vui vẻ!\n" +
-				"━━━━━━━━━━━━━━━━━━━"
+				`➢ 𝗖𝗵𝗮̀𝗼 𝗺𝘂̛̀𝗻𝗴 ✦ {userName} 🌸
+
+➢ 𝗧𝗼 𝗼𝘂𝗿 𝗚𝗿𝗼𝘂𝗽 {boxName} 🐱🎀
+
+╭➢ {session} 😊
+│ 
+╰➢ 𝗖𝗵𝘂́𝗰 {multiple} 𝗰𝗵𝗮̣𝗽 𝘁𝗵𝗮̣̂𝗻𝗵 𝗮𝗹𝗹 𝗰𝗮́𝗰 𝗾𝘂𝘆 𝗱𝗶𝗻𝗵 ♻ 
+
+╭➢ 𝗢𝘄𝗻𝗲𝗿: 𝐀 𝐑 𝐈 𝐉 𝐈 𝐓⚡
+╰➢ 𝗙𝗯: [ https://fb.com/arijit016 ] 🌐`
 		}
 	},
 
