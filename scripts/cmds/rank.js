@@ -3,74 +3,125 @@ const axios = require("axios");
 const fs = require("fs-extra");
 const path = require("path");
 
-const defaultFontPath = path.join(__dirname, "assets", "font", "BeVietnamPro-Bold.ttf");
-Canvas.registerFont(defaultFontPath, { family: "BeVietnamPro" });
+// Register custom font
+const fontPath = path.join(__dirname, "assets", "font", "BeVietnamPro-Bold.ttf");
+if (fs.existsSync(fontPath)) {
+  Canvas.registerFont(fontPath, { family: "BeVietnamPro" });
+}
 
 module.exports = {
   config: {
     name: "rank",
-    version: "2.0",
+    version: "3.0",
     author: "Arijit",
     countDown: 5,
     role: 0,
     shortDescription: "Show user rank card",
-    longDescription: "Displays the user’s level, EXP and rank in an aesthetic style",
+    longDescription: "Displays user rank card in glowing aesthetic style with random neon colors",
     category: "rank",
   },
 
-  onStart: async function ({ event, usersData, message, economy, exp }) {
+  onStart: async function ({ event, usersData, threadsData, message }) {
     try {
       const uid = event.senderID;
       const userInfo = await usersData.get(uid);
 
+      // Mock example if fields missing
+      const exp = userInfo.exp || 0;
       const level = userInfo.level || 1;
-      const userExp = userInfo.exp || 0;
-      const expToNext = (level + 1) * 100;
-      const expProgress = (userExp / expToNext) * 100;
+      const messages = userInfo.messages || 0;
+      const money = userInfo.money || 0;
+      const gender = userInfo.gender || "Unknown";
+      const username = userInfo.username || "unknown";
+      const expRank = userInfo.expRank || "1/5";
+      const moneyRank = userInfo.moneyRank || "1/5";
 
+      // Neon colors
+      const neonColors = ["#ff4757", "#1e90ff", "#2ed573", "#ffa502", "#e84393", "#00cec9", "#ffeaa7"];
+      const neon = neonColors[Math.floor(Math.random() * neonColors.length)];
+
+      // Avatar
       const avatarURL = `https://graph.facebook.com/${uid}/picture?width=512&height=512`;
       const avatar = await Canvas.loadImage((await axios.get(avatarURL, { responseType: "arraybuffer" })).data);
 
-      const canvas = Canvas.createCanvas(800, 300);
+      const canvas = Canvas.createCanvas(1200, 600);
       const ctx = canvas.getContext("2d");
 
-      // Background
-      ctx.fillStyle = "#f5f7fa";
+      // Background dark with stars
+      ctx.fillStyle = "#0a0a0a";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < 200; i++) {
+        ctx.fillStyle = "white";
+        ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 2, 2);
+      }
+
+      // Neon border
+      ctx.strokeStyle = neon;
+      ctx.lineWidth = 12;
+      ctx.shadowBlur = 40;
+      ctx.shadowColor = neon;
+      ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+
+      // Reset shadow
+      ctx.shadowBlur = 0;
 
       // Avatar circle
       ctx.save();
       ctx.beginPath();
-      ctx.arc(120, 150, 80, 0, Math.PI * 2);
+      ctx.arc(canvas.width / 2, 150, 100, 0, Math.PI * 2);
       ctx.closePath();
       ctx.clip();
-      ctx.drawImage(avatar, 40, 70, 160, 160);
+      ctx.drawImage(avatar, canvas.width / 2 - 100, 50, 200, 200);
       ctx.restore();
 
       // Username
-      ctx.fillStyle = "#333";
-      ctx.font = "30px BeVietnamPro";
-      ctx.fillText(userInfo.name || "User", 230, 130);
+      ctx.fillStyle = neon;
+      ctx.font = "50px BeVietnamPro";
+      ctx.textAlign = "center";
+      ctx.fillText(userInfo.name || "Unknown", canvas.width / 2, 300);
 
-      // Level & Rank
-      ctx.font = "22px BeVietnamPro";
-      ctx.fillStyle = "#555";
-      ctx.fillText(`Level: ${level}`, 230, 170);
-      ctx.fillText(`EXP: ${userExp}/${expToNext}`, 230, 200);
+      ctx.fillStyle = "#fff";
+      ctx.font = "26px BeVietnamPro";
+      ctx.textAlign = "left";
 
-      // EXP Bar background
-      ctx.fillStyle = "#ddd";
-      ctx.fillRect(230, 220, 500, 25);
+      const leftX = 150;
+      const rightX = 650;
+      let y = 360;
+      const gap = 45;
 
-      // EXP Progress
-      ctx.fillStyle = "#6c5ce7";
-      ctx.fillRect(230, 220, (500 * expProgress) / 100, 25);
+      // Left side
+      ctx.fillText(`🆔 User ID: ${uid}`, leftX, y);
+      y += gap;
+      ctx.fillText(`🏷️ Nickname: ${userInfo.name}`, leftX, y);
+      y += gap;
+      ctx.fillText(`👫 Gender: ${gender}`, leftX, y);
+      y += gap;
+      ctx.fillText(`🌐 Username: ${username}`, leftX, y);
+      y += gap;
+      ctx.fillText(`⭐ Level: ${level}`, leftX, y);
 
-      // Buffer
+      // Right side
+      y = 360;
+      ctx.fillText(`⚡ EXP: ${exp}`, rightX, y);
+      y += gap;
+      ctx.fillText(`💰 Money: ${money}`, rightX, y);
+      y += gap;
+      ctx.fillText(`💬 Messages: ${messages}`, rightX, y);
+      y += gap;
+      ctx.fillText(`🏆 EXP Rank: ${expRank}`, rightX, y);
+      y += gap;
+      ctx.fillText(`💹 Money Rank: ${moneyRank}`, rightX, y);
+
+      // Footer
+      ctx.font = "18px BeVietnamPro";
+      ctx.fillStyle = "#bbb";
+      ctx.textAlign = "center";
+      ctx.fillText(`Last Update: ${new Date().toLocaleString()}`, canvas.width / 2, canvas.height - 40);
+
       const buffer = canvas.toBuffer();
 
       return message.reply({
-        body: "🎀 | Your Rank Card",
+        body: "✨ Your Rank Card",
         attachment: [buffer]
       });
 
