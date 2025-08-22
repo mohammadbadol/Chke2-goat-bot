@@ -9,7 +9,7 @@ module.exports.config = {
   author: "Arijit",
   cooldowns: 5,
   role: 0,
-  shortDescription: "Mention someone to turn them into Tango 🦧",
+  shortDescription: "Mention দে তারে যারে tango বানাবি 🦧",
   longDescription: "Overlay user's avatar onto the body of Tango the orangutan",
   category: "fun",
   guide: {
