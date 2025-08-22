@@ -4,7 +4,7 @@ const fs = require("fs-extra");
 
 module.exports = {
   config: {
-    name: "pair5",
+    name: "pair1",
     aliases: ["pairr"],
     version: "1.1",
     author: "Ncs Pro + Arijit",
