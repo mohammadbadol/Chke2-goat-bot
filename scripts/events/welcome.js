@@ -27,10 +27,10 @@ module.exports = {
 
 	langs: {
 		en: {
-			session1: "🌅 morning",
-			session2: "☀️ noon",
-			session3: "🌇 afternoon",
-			session4: "🌙 evening",
+			session1: " Morning",
+			session2: " Noon",
+			session3: " Afternoon",
+			session4: " Evening",
 			multiple1: "you",
 			multiple2: "all of you",
 			defaultWelcomeMessage:
@@ -39,7 +39,7 @@ module.exports = {
 
 𝗛𝗮𝘃𝗲 𝗮 𝗻𝗶𝗰𝗲 {session} 😊  
 
-⚠ 𝗜 𝗵𝗼𝗽𝗲 {multiple} 𝘄𝗶𝗹𝗹 𝗳𝗼𝗹𝗹𝗼𝘄 𝗼𝘂𝗿 𝗮𝗹𝗹 𝗚𝗿𝗼𝘂𝗽 𝗿𝘂𝗹𝗲𝘀 ♻  
+𝗜 𝗵𝗼𝗽𝗲 𝘆𝗼𝘂 𝘄𝗶𝗹𝗹 𝗳𝗼𝗹𝗹𝗼𝘄 𝗼𝘂𝗿 𝗮𝗹𝗹 𝗚𝗿𝗼𝘂𝗽 𝗿𝘂𝗹𝗲𝘀 ♻  
 
 ╭➢ 𝗢𝘄𝗻𝗲𝗿: 𝐀 𝐑 𝐈 𝐉 𝐈 𝐓  
 ╰➢ 𝗙𝗯: https://fb.com/arijit016`
