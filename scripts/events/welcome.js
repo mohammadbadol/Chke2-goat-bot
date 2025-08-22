@@ -41,16 +41,18 @@ module.exports = {
 			multiple1: "you",
 			multiple2: "all of you",
 			defaultWelcomeMessage:
-`𝗪𝗲𝗹𝗰𝗼𝗺𝗲 : {userName}  
-𝗧𝗼 𝗼𝘂𝗿 𝗚𝗿𝗼𝘂𝗽 : {boxName} 🐱🎀  
+`‎𝐖𝐞𝐥𝐜𝐨𝐦𝐞 : [{userName}] 
+𝐓𝐨 𝐨𝐮𝐫 𝐠𝐫𝐨𝐮𝐩 : [ {boxName} ]🎀  
 
-𝗛𝗮𝘃𝗲 𝗮 𝗻𝗶𝗰𝗲 {session} 😊  
+🎀 𝐇𝐚𝐯𝐞 𝐚 𝐧𝐢𝐜𝐞 {session} 😊  
 
-𝗜 𝗵𝗼𝗽𝗲 𝘆𝗼𝘂 𝘄𝗶𝗹𝗹 𝗳𝗼𝗹𝗹𝗼𝘄 𝗼𝘂𝗿 𝗮𝗹𝗹 𝗚𝗿𝗼𝘂𝗽 𝗿𝘂𝗹𝗲𝘀 ♻  
+🔰 𝐈 𝐡𝐨𝐩𝐞 𝐲𝐨𝐮 𝐟𝐨𝐥𝐥𝐨𝐰 𝐨𝐮𝐫 𝐚𝐥𝐥 𝐠𝐫𝐨𝐮𝐩 𝐫𝐮𝐥𝐞𝐬 ♻  
 
-╭➢ 𝗢𝘄𝗻𝗲𝗿: 𝐀 𝐑 𝐈 𝐉 𝐈 𝐓  
-╰➢ 𝗙𝗯: https://fb.com/arijit016
-🕒(🇮🇳):{timeIND} , 🕒(🇧🇩):{timeBD} `
+╭➢ 𝐎𝐰𝐧𝐞𝐫 : 𝐀 𝐑 𝐈 𝐉 𝐈 𝐓⚡  
+╰➢ 𝐅𝐁 : https://fb.com/arijit016
+
+╭➢ 🕒 {timeIND} (IN) 
+╰➢ 🕒 {timeBD} (BD)`
 		}
 	},
 
