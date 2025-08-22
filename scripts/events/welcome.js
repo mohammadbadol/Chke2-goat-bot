@@ -41,7 +41,7 @@ module.exports = {
 			multiple1: "you",
 			multiple2: "all of you",
 			defaultWelcomeMessage:
-`‎𝐖𝐞𝐥𝐜𝐨𝐦𝐞 : [{userName}] 
+`‎𝐖𝐞𝐥𝐜𝐨𝐦𝐞 : [ {userName} ] 
 𝐓𝐨 𝐨𝐮𝐫 𝐠𝐫𝐨𝐮𝐩 : [ {boxName} ]🎀  
 
 🎀 𝐇𝐚𝐯𝐞 𝐚 𝐧𝐢𝐜𝐞 {session} 😊  
