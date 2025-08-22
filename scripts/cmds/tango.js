@@ -31,7 +31,7 @@ module.exports.onStart = async function ({ api, event, message, usersData }) {
 
     // 🚫 Protect owner UID
     if (targetID === "100069254151118") {
-      return message.reply("You deserve this, not my owner!");
+      return message.reply("🚫 You deserve this, not my owner! 😙");
     }
 
     const base = path.join(__dirname, "..", "resources");
