@@ -8,6 +8,7 @@
     "npm": ">=7.0.0"
   },
   "dependencies": {
+    "priyanshu-fca": "latest",
     "@distube/ytdl-core": "^4.13.3",
     "axios": "^1.4.0",
     "ws3-fca": "^1.0.47",
