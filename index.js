@@ -1,38 +1,61 @@
 /**
- * @author NTKhang
- * ! The source code is written by NTKhang, please don't change the author's name everywhere. Thank you for using
- * ! Official source code: https://github.com/ntkhang03/Goat-Bot-V2
- * ! If you do not download the source code from the above address, you are using an unknown version and at risk of having your account hacked
- *
- * English:
- * ! Please do not change the below code, it is very important for the project.
- * It is my motivation to maintain and develop the project for free.
- * ! If you change it, you will be banned forever
- * Thank you for using
- *
- * Vietnamese:
- * ! Vui lòng không thay đổi mã bên dưới, nó rất quan trọng đối với dự án.
- * Nó là động lực để tôi duy trì và phát triển dự án miễn phí.
- * ! Nếu thay đổi nó, bạn sẽ bị cấm vĩnh viễn
- * Cảm ơn bạn đã sử dụng
+ * Minimal working Goat.js for Goat-Bot V2
+ * Ensure account.dev.txt exists in same folder
  */
 
-const { spawn } = require("child_process");
-const log = require("./logger/log.js");
+process.on('unhandledRejection', err => console.error(err));
+process.on('uncaughtException', err => console.error(err));
 
-function startProject() {
-	const child = spawn("node", ["Goat.js"], {
-		cwd: __dirname,
-		stdio: "inherit",
-		shell: true
-	});
+const fs = require('fs');
+const path = require('path');
+const log = require('./logger/log.js'); // Make sure logger exists
+const { spawn } = require('child_process');
 
-	child.on("close", (code) => {
-		if (code == 2) {
-			log.info("Restarting Project...");
-			startProject();
-		}
-	});
+// --- ENV Mode ---
+const NODE_ENV = process.env.NODE_ENV || 'development';
+
+// --- Paths ---
+const dirAccount = path.join(__dirname, `account${NODE_ENV === 'development' ? '.dev.txt' : '.txt'}`);
+const dirConfig = path.join(__dirname, `config${NODE_ENV === 'development' ? '.dev.json' : '.json'}`);
+const dirConfigCommands = path.join(__dirname, `configCommands${NODE_ENV === 'development' ? '.dev.json' : '.json'}`);
+
+// --- Check appstate file ---
+if (!fs.existsSync(dirAccount)) {
+  console.error('❌ account.dev.txt not found! Generate it first using login script.');
+  process.exit(1);
 }
 
-startProject();
+// --- Global bot object ---
+global.GoatBot = {
+  startTime: Date.now(),
+  config: require(dirConfig),
+  configCommands: require(dirConfigCommands),
+  fcaApi: null,
+  botID: null
+};
+
+// --- Utils placeholder ---
+const utils = require('./utils.js');
+global.utils = utils;
+
+// --- Main bot start ---
+(async () => {
+  try {
+    // Resolve login file
+    const loginFile = path.join(__dirname, 'bot', 'login', `login${NODE_ENV === 'development' ? '.dev.js' : '.js'}`);
+    require(loginFile); // login.js should handle loading appstate
+
+    log.success('GOAT', 'Bot initialized successfully!');
+  } catch (err) {
+    console.error('❌ Failed to start bot:', err);
+  }
+})();
+
+// --- Auto restart (optional) ---
+if (global.GoatBot.config.autoRestart) {
+  const time = global.GoatBot.config.autoRestart.time || 24 * 60 * 60 * 1000; // default 24h
+  setTimeout(() => {
+    log.info('AUTO RESTART', 'Restarting bot...');
+    process.exit(2);
+  }, time);
+}
