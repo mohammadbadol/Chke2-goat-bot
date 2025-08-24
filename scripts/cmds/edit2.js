@@ -2,47 +2,22 @@ const axios = require("axios");
 const fs = require("fs-extra");
 const path = require("path");
 
-const VIP_FILE = path.join(__dirname, "vip.json");
-
 module.exports = {
   config: {
     name: "edit2",
-    version: "1.1.0",
-    author: "IMRAN + VIP Lock",
+    version: "1.2.0",
+    author: "Arijit",
     cooldowns: 5,
-    role: 0, // everyone, VIP enforced separately
+    role: 2, // 2 = Bot Admin only
     category: "image",
-    description: "AI image editing using prompt + image or attachment (VIP only)",
+    description: "AI image editing using prompt + image (Bot Admin only)",
     usages: "edit2 [prompt] + reply image or link",
     dependencies: { axios: "" },
     aliases: ["e2"]
   },
 
-  langs: {
-    en: {
-      notVip: "❌ | You are not a VIP user. Type !vip to see how to get VIP access."
-    }
-  },
-
-  onStart: async function ({ api, event, args, message, getLang }) {
+  onStart: async function ({ api, event, args, message }) {
     try {
-      // === VIP check ===
-      let vipDB = [];
-      if (fs.existsSync(VIP_FILE)) {
-        try {
-          vipDB = JSON.parse(fs.readFileSync(VIP_FILE));
-        } catch {
-          vipDB = [];
-        }
-      }
-
-      const senderID = event.senderID;
-      const isVip = vipDB.some(
-        user => user.uid === senderID && (user.expire === 0 || user.expire > Date.now())
-      );
-      if (!isVip) return message.reply(getLang("notVip"));
-      // =================
-
       // === Image + Prompt handling ===
       let linkanh = event.messageReply?.attachments?.[0]?.url || null;
       const prompt = args.join(" ").split("|")[0]?.trim();
