@@ -8,7 +8,7 @@ module.exports = {
     author: "𝗠𝗮𝗵 𝗠𝗨𝗗 彡",
     shortDescription: "",
     longDescription: "",
-    category: "fun",
+    category: "love",
     guide: "{pn}",
     envConfig: {
       deltaNext: 5,
