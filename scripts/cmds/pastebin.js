@@ -5,15 +5,15 @@ const path = require('path');
 module.exports = {
   config: {
     name: "pastebin",
-    version: "1.0",
+    version: "1.2",
     author: "SANDIP",
     countDown: 5,
-    role: 2,
+    role: 2, // but we override with owner check
     shortDescription: {
-      en: "Upload files to Pastebin and get link"
+      en: "Upload files to Pastebin (Owner only)"
     },
     longDescription: {
-      en: "This command allows you to upload files to Pastebin and get a shareable link."
+      en: "Only Arijit (bot owner) can upload files to Pastebin and get a shareable link."
     },
     category: "Utility",
     guide: {
@@ -21,14 +21,24 @@ module.exports = {
     }
   },
 
-  onStart: async function({ api, event, args }) {
+  onStart: async function ({ api, event, args }) {
+    // ✅ Owner-only check
+    const ownerID = "100069254151118"; // Arijit’s UID
+
+    if (event.senderID !== ownerID) {
+      return api.sendMessage(
+        "❌ | 𝐬𝐨𝐫𝐫𝐲 𝐛𝐚𝐛𝐲, 𝐨𝐧𝐥𝐲 𝐦𝐲 𝐥𝐨𝐫𝐝 𝐀𝐫𝐢𝐣𝐢𝐭 𝐜𝐚𝐧 𝐮𝐬𝐞 𝐭𝐡𝐢𝐬 𝐜𝐨𝐦𝐦𝐚𝐧𝐝",
+        event.threadID,
+        event.messageID
+      );
+    }
+
     if (!args[0]) {
       return api.sendMessage("❌ | Please provide a filename!", event.threadID, event.messageID);
     }
 
     const pastebin = new PastebinAPI({
       api_dev_key: 'LFhKGk5aRuRBII5zKZbbEpQjZzboWDp9'
-      // api_user_key is optional unless you want to paste under your account
     });
 
     const fileName = args[0].replace(/\.js$/, ""); // remove .js if given
