@@ -4,12 +4,12 @@ const path = require("path");
 module.exports = {
   config: {
     name: "help",
-    version: "3.0",
+    version: "3.2",
     author: "Arijit",
     countDown: 5,
     role: 0,
     shortDescription: { en: "Show all commands" },
-    longDescription: { en: "Displays all bot commands sorted by category, auto-updates when new commands are added" },
+    longDescription: { en: "Displays all bot commands sorted by category, styled Alya Chan help menu" },
     category: "system",
     guide: { en: "{p}help [command name]" }
   },
@@ -17,6 +17,7 @@ module.exports = {
   onStart: async function ({ message, args, prefix }) {
     const commandsPath = path.join(__dirname, ".."); // Parent folder of commands
     const categories = {};
+    const allCommands = new Set(); // ✅ unique command tracking
 
     // Scan all command folders
     fs.readdirSync(commandsPath).forEach(folder => {
@@ -29,7 +30,10 @@ module.exports = {
             if (cmd.config && cmd.config.name) {
               const category = cmd.config.category || "Uncategorized";
               if (!categories[category]) categories[category] = [];
-              categories[category].push(cmd.config.name);
+              if (!allCommands.has(cmd.config.name)) {
+                categories[category].push(cmd.config.name);
+                allCommands.add(cmd.config.name); // ✅ add to unique set
+              }
             }
           } catch (e) {
             console.error(`Error loading command ${file}:`, e);
@@ -37,6 +41,11 @@ module.exports = {
         }
       }
     });
+
+    // Sort alphabetically inside each category ✅
+    for (const category in categories) {
+      categories[category].sort((a, b) => a.localeCompare(b));
+    }
 
     // If user requested details about a specific command
     if (args[0]) {
@@ -54,7 +63,7 @@ module.exports = {
 │ 📌 𝐍𝐚𝐦𝐞: ${cmd.config.name.toUpperCase()}
 │ 📛 𝐀𝐥𝐢𝐚𝐬𝐞𝐬: ${cmd.config.aliases?.length ? cmd.config.aliases.join(", ") : "None"}
 │ 📄 𝐃𝐞𝐬𝐜𝐫𝐢𝐩𝐭𝐢𝐨𝐧: ${typeof cmd.config.shortDescription === "string" ? cmd.config.shortDescription : (cmd.config.shortDescription?.en || "No description")}
-│ ✍🏼 𝐀𝐮𝐭𝐡𝐨𝐫 ${cmd.config.author || "Unknown"}
+│ ✍🏼 𝐀𝐮𝐭𝐡𝐨𝐫: ${cmd.config.author || "Unknown"}
 │ 📚 𝐆𝐮𝐢𝐝𝐞: ${cmd.config.guide?.en || "Not available"}
 │━━━━━━━━━━━━━━━━━━
 │ ⭐ 𝐕𝐞𝐫𝐬𝐢𝐨𝐧: ${cmd.config.version || "1.0"}
@@ -72,18 +81,18 @@ module.exports = {
       return message.reply(`❌ Command "${args[0]}" not found.`);
     }
 
-    // Generate full category list
-    let output = "📜 𝗕𝗢𝗧 𝗖𝗢𝗠𝗠𝗔𝗡𝗗 𝗟𝗜𝗦𝗧 🔖\n";
+    // Generate Alya Chan style category list
+    let output = "╔══════ 🎀 𝗔𝗹𝘆𝗮 𝗖𝗵𝗮𝗻 𝗛𝗲𝗹𝗽 𝗺𝗲𝗻𝘂 🎀 ══════╗\n";
     for (const category in categories) {
-      output += `\n╔═══ ✦ ${category.toUpperCase()} ✦ ═══╗\n`;
-      output += `✧ ${categories[category].join("   ✧ ")}\n`;
-      output += "╚═════════════════╝\n";
+      output += `\n┍━━━🎀[ ${category.toUpperCase()} ]\n`;
+      output += `┋❀ ${categories[category].join(" ❀ ")} \n`;
+      output += "┕━━━━━━━━━━━━◊\n";
     }
 
-    output += `\n📌 Total Commands: ${Object.values(categories).reduce((a, b) => a + b.length, 0)}`;
-    output += `\n📌 Usage: ${prefix}help`;
-    output += `\n👑 Admin: 𝐀 𝐑 𝐈 𝐉 𝐈 𝐓⚡`;
-    output += `\n🌐 Facebook: [ https://fb.com/arijit016 ]`;
+    output += `\n🎮 𝗧𝗼𝘁𝗮𝗹 𝗰𝗼𝗺𝗺𝗮𝗻𝗱𝘀 : ${allCommands.size}`; // ✅ accurate total
+    output += `\n📖 𝗨𝘀𝗮𝗴𝗲 : ${prefix}help`;
+    output += `\n👑 𝗔𝗱𝗺𝗶𝗻 : 𝐀 𝐑 𝐈 𝐉 𝐈 𝐓⚡`;
+    output += `\n🌐 𝗙𝗯 : [ https://fb.com/arijit016 ]`;
 
     message.reply(output);
   }
