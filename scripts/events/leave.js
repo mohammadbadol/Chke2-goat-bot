@@ -9,6 +9,7 @@ module.exports = {
   },
 
   onStart: async ({ threadsData, message, event, api, usersData }) => {
+    // Only run when someone leaves voluntarily
     if (event.logMessageType !== "log:unsubscribe") return;
 
     const { threadID } = event;
@@ -20,15 +21,10 @@ module.exports = {
 
     const userName = await usersData.getName(leftParticipantFbId);
     const isSelfLeave = leftParticipantFbId == event.author;
+    if (!isSelfLeave) return; // This file only handles self-leave
 
-    // Message and video
-    const text = isSelfLeave
-      ? `👉 ${userName} গ্রুপে থাকার যোগ্যতা নেই দেখে লিভ নিয়েছে 🤣`
-      : `👉 ${userName} গ্রুপে থাকার যোগ্যতা নেই দেখে kick খেয়েছে 🤣`;
-
-    const videoUrl = isSelfLeave
-      ? "https://i.imgur.com/yDldZbm.mp4"
-      : "https://i.imgur.com/pZD2c76.mp4";
+    const text = `👉 ${userName} গ্রুপে থাকার যোগ্যতা নেই দেখে লিভ নিয়েছে 🤣`;
+    const videoUrl = "https://litter.catbox.moe/n5i654ruf1tnfxod.mp4";
 
     const form = {
       body: text,
