@@ -6,12 +6,13 @@ const jimp = require("jimp");
 module.exports = {
   config: {
     name: "groupkutta",
-    version: "1.1.1",
+    aliases: ["gk"], // ✅ shortcut alias
+    version: "1.1.2",
     author: "NAFIJ PRO + Arijit",
     countDown: 5,
     role: 0,
-    shortDescription: "🐶 গ্রুপ কুত্তা বানাও",
-    longDescription: "ছবির কুত্তাদের মাথায় এভাটার বসাও, ট্যাগ করা ইউজার সামনে থাকবে",
+    shortDescription: "Make a group of kutte 🐶",
+    longDescription: "Replace dog heads in image with random avatars and the tagged/replied user as the front dog",
     category: "fun",
     guide: {
       en: "{pn} @mention or reply to someone",
@@ -31,7 +32,7 @@ module.exports = {
 
     // ✅ Owner Protection
     if (targetID === OWNER_ID) {
-      return message.reply("❌ এই ইউজার বটের মালিক, তাকে কুত্তা বানানো যাবে না!");
+      return message.reply("🚫 You deserve this, not my owner! 😙");
     }
 
     const baseFolder = path.join(__dirname, "NAFIJ");
