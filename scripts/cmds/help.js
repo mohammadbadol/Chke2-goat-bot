@@ -82,7 +82,7 @@ module.exports = {
     }
 
     // Generate Alya Chan style category list
-    let output = "╔══════ 🎀 𝗔𝗹𝘆𝗮 𝗖𝗵𝗮𝗻 𝗛𝗲𝗹𝗽 𝗺𝗲𝗻𝘂 🎀 ══════╗\n";
+    let output = "╔═══ 🎀 𝗔𝗹𝘆𝗮 𝗛𝗲𝗹𝗽 𝗺𝗲𝗻𝘂 🎀 ═══╗\n";
     for (const category in categories) {
       output += `\n┍━━━🎀[ ${category.toUpperCase()} ]\n`;
       output += `┋❀ ${categories[category].join(" ❀ ")} \n`;
