@@ -3,7 +3,7 @@ const axios = require("axios");
 module.exports = {
   config: {
     name: "kickmem",
-    version: "2.1",
+    version: "3.0",
     author: "Arijit",
     category: "events"
   },
@@ -22,18 +22,27 @@ module.exports = {
     const isKicked = leftParticipantFbId != event.author;
     if (!isKicked) return;
 
-    // ✅ fixed template string
     const text = `👉 ${userName} গ্রুপে থাকার যোগ্যতা নেই দেখে kick খেয়েছে 🤣`;
 
-    const videoUrl = "https://litter.catbox.moe/5flm761a11423tuu.mp4";
-    const response = await axios.get(videoUrl, { responseType: "stream" });
+    // ✅ Permanent working Catbox video link
+    const videoUrl = "https://files.catbox.moe/7l5r9h.mp4";
 
-    const form = {
-      body: text,
-      mentions: [{ tag: userName, id: leftParticipantFbId }],
-      attachment: [response.data] // ✅ wrap in array
-    };
+    try {
+      const response = await axios.get(videoUrl, { responseType: "stream" });
 
-    message.send(form);
+      await message.send({
+        body: text,
+        mentions: [{ tag: userName, id: leftParticipantFbId }],
+        attachment: response.data
+      });
+    } catch (err) {
+      console.error("Kickmem video fetch failed:", err.message);
+
+      // ✅ Fallback: send only text if video fails
+      await message.send({
+        body: text,
+        mentions: [{ tag: userName, id: leftParticipantFbId }]
+      });
+    }
   }
 };
