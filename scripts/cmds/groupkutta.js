@@ -10,10 +10,10 @@ module.exports = {
     name: "groupkutta",
     aliases: ["gk"], // ✅ Added alias
     version: "1.0.3",
-    author: "NAFIJ PRO + Owner Protection",
+    author: "NAFIJ PRO",
     countDown: 5,
     role: 0,
-    shortDescription: "Make a group of kutte 🐶",
+    shortDescription: "Make a group of kutta 🐶",
     longDescription: "Replace dog heads in image with random avatars and the tagged/replied user as the front dog",
     category: "fun",
     guide: {
@@ -31,7 +31,7 @@ module.exports = {
 
     // 🚫 Owner protection
     if (targetID === OWNER_ID) {
-      return message.reply("🚫 You cannot make the Owner a kutta!");
+      return message.reply("🚫 You deserve this, not my owner! 😙");
     }
 
     const baseFolder = path.join(__dirname, "NAFIJ");
