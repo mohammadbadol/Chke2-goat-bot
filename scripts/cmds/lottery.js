@@ -7,18 +7,16 @@ const STATUS_PATH = path.join(__dirname, "lottery_status.json");
 const MAX_TICKETS = 20;
 const MAX_PER_USER = 3;
 const TICKET_PRICE = 1_000_000;
-const BOT_USER_ID = "BOT_LOTTERY_AI";
-const BOT_NAME = "𝐀𝐥𝐲𝐚 𝐂𝐡𝐚𝐧 🐱🎀";
 
 module.exports = {
   config: {
     name: "lottery",
-    version: "3.0.0",
+    version: "3.1.0",
     author: "Arijit",
     countDown: 5,
     role: 0,
-    shortDescription: "Lottery game system with bot",
-    longDescription: "Buy tickets, compete with bot, draw winner.",
+    shortDescription: "Lottery game system",
+    longDescription: "Buy tickets, compete with other users, draw winner.",
     category: "game",
     guide: {
       en: "{pn} buy 1-3 | draw | info | status"
@@ -73,18 +71,6 @@ module.exports = {
         newTickets.push(ticketNumber);
       }
 
-      // Bot joins after user buys
-      const botAlreadyIn = data.tickets.some(t => t.userId === BOT_USER_ID);
-      if (!botAlreadyIn && data.tickets.length < MAX_TICKETS) {
-        const botBuyCount = Math.min(MAX_PER_USER, MAX_TICKETS - data.tickets.length, Math.floor(Math.random() * 3) + 1);
-        for (let i = 0; i < botBuyCount; i++) {
-          data.tickets.push({
-            userId: BOT_USER_ID,
-            ticketNumber: data.tickets.length + 1
-          });
-        }
-      }
-
       await fs.writeJson(DATA_PATH, data);
 
       return message.reply(
@@ -100,24 +86,6 @@ module.exports = {
 
       const winnerTicket = data.tickets[Math.floor(Math.random() * data.tickets.length)];
       const prize = TICKET_PRICE * MAX_TICKETS;
-
-      if (winnerTicket.userId === BOT_USER_ID) {
-        await fs.writeJson(STATUS_PATH, {
-          name: BOT_NAME,
-          ticketNumber: winnerTicket.ticketNumber,
-          userId: BOT_USER_ID,
-          prize
-        });
-        await fs.writeJson(DATA_PATH, { tickets: [] });
-
-        return message.reply(
-          `╭──────────────⭓\n` +
-          `├ 🤖 𝐁𝐨𝐭 𝐖𝐢𝐧𝐬 𝐓𝐡𝐞 𝐋𝐨𝐭𝐭𝐞𝐫𝐲!\n` +
-          `├ 🎟 𝐓𝐢𝐜𝐤𝐞𝐭: #${winnerTicket.ticketNumber}\n` +
-          `├ 💰 𝐏𝐫𝐢𝐳𝐞: $${prize / 1_000_000}𝐌\n` +
-          `╰──────────────⭓\n\n😢 All user money has been eaten by the bot! Try again next time!`
-        );
-      }
 
       const winnerData = await usersData.get(winnerTicket.userId);
       const winnerBalance = winnerData?.money || 0;
@@ -161,7 +129,7 @@ module.exports = {
       let infoText = `🎰 𝐋𝐨𝐭𝐭𝐞𝐫𝐲 𝐒𝐭𝐚𝐭𝐮𝐬:\n\n🎟 𝐓𝐢𝐜𝐤𝐞𝐭𝐬 𝐬𝐨𝐥𝐝: ${data.tickets.length}/${MAX_TICKETS}\n💰 𝐏𝐫𝐢𝐳𝐞 𝐩𝐨𝐨𝐥: $${(data.tickets.length * TICKET_PRICE / 1_000_000)}𝐌\n\n`;
 
       for (const [uid, ticketNums] of Object.entries(usersMap)) {
-        const name = uid === BOT_USER_ID ? BOT_NAME : (await usersData.get(uid))?.name || uid;
+        const name = (await usersData.get(uid))?.name || uid;
         infoText += `╭─ ${name}:\n╰──‣ ${ticketNums.length} Ticket${ticketNums.length > 1 ? "s" : ""}\n`;
       }
 
