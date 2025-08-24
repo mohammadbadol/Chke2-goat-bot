@@ -11,7 +11,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
-	res.send("EREN BOT RUNNING \n author: Eren \n Status: smooth 🥵");
+	res.send("Alya BOT RUNNING \n author: Aru \n Status: smooth 🎀");
 });
 
 app.listen(PORT, () => {
