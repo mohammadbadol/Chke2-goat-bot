@@ -15,7 +15,7 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => {
-	console.log(`✅ Server running at http://localhost:${PORT}`);
+	console.log(`✅ Alya Server running at http://localhost:${PORT} Aru project`);
 });
 
 // === Start the Goat bot process ===
