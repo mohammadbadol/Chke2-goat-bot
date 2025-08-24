@@ -8,13 +8,13 @@ const OWNER_ID = "100069254151118"; // ✅ Your UID here
 module.exports = {
   config: {
     name: "groupkutta",
-    aliases: ["gk"], // ✅ Added alias
-    version: "1.0.3",
+    aliases: ["gk"],
+    version: "1.0.4",
     author: "NAFIJ PRO",
     countDown: 5,
     role: 0,
-    shortDescription: "Make a group of kutta 🐶",
-    longDescription: "Replace dog heads in image with random avatars and the tagged/replied user as the front dog",
+    shortDescription: "Make a group of kutte 🐶",
+    longDescription: "Replace dog heads in image with random avatars and the tagged/replied user as the leader kutta",
     category: "fun",
     guide: {
       en: "{pn} @mention or reply to someone",
@@ -51,10 +51,10 @@ module.exports = {
       const bg = await jimp.read(bgPath);
       bg.resize(619, 495);
 
-      // ✅ Get 4 random members
+      // ✅ Get 4 random members, **exclude owner**
       const threadInfo = await api.getThreadInfo(event.threadID);
       const allParticipants = threadInfo.participantIDs.filter(
-        id => id !== targetID && id !== api.getCurrentUserID()
+        id => id !== targetID && id !== api.getCurrentUserID() && id !== OWNER_ID
       );
 
       if (allParticipants.length < 4) {
@@ -64,13 +64,13 @@ module.exports = {
       const random4 = allParticipants.sort(() => 0.5 - Math.random()).slice(0, 4);
       const allIDs = [...random4, targetID];
 
-      // 🐶 Positions
+      // 🐶 Avatar placement positions
       const positions = [
-        { x: 20, y: 80, size: 100 },
-        { x: 60, y: 220, size: 110 },
-        { x: 200, y: 180, size: 110 },
-        { x: 340, y: 170, size: 110 },
-        { x: 410, y: 310, size: 120 }
+        { x: 18, y: 60, size: 60 },
+        { x: 70, y: 185, size: 70 },
+        { x: 210, y: 145, size: 80 },
+        { x: 345, y: 120, size: 80 },
+        { x: 370, y: 320, size: 100 }
       ];
 
       // 🧠 Overlay avatars
