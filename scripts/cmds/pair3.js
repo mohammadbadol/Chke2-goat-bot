@@ -7,7 +7,7 @@ module.exports = {
         name: "pair3",
         countDown: 5,
         role: 0,
-        category: "fun",
+        category: "love",
     },
     onStart: async function ({ api, event }) {
         let pathImg = __dirname + "/cache/background.png";
