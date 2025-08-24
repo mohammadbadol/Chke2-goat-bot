@@ -8,11 +8,12 @@ const OWNER_ID = "100069254151118"; // ✅ Your UID here
 module.exports = {
   config: {
     name: "groupkutta",
-    version: "1.0.2",
-    author: "NAFIJ PRO",
+    aliases: ["gk"], // ✅ Added alias
+    version: "1.0.3",
+    author: "NAFIJ PRO + Owner Protection",
     countDown: 5,
     role: 0,
-    shortDescription: "Make a group of kutta 🐶",
+    shortDescription: "Make a group of kutte 🐶",
     longDescription: "Replace dog heads in image with random avatars and the tagged/replied user as the front dog",
     category: "fun",
     guide: {
@@ -30,7 +31,7 @@ module.exports = {
 
     // 🚫 Owner protection
     if (targetID === OWNER_ID) {
-      return message.reply("🚫 You deserve this, not my owner! 😙");
+      return message.reply("🚫 You cannot make the Owner a kutta!");
     }
 
     const baseFolder = path.join(__dirname, "NAFIJ");
