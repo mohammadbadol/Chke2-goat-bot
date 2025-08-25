@@ -22,11 +22,15 @@ function formatHours(hours) {
 module.exports = {
 	config: {
 		name: "weather",
-		version: "1.2",
+		version: "1.1",
 		author: "NTKhang",
 		countDown: 5,
 		role: 0,
-		description: {
+		shortDescription: {
+			vi: "dự báo thời tiết",
+			en: "weather forecast"
+		},
+		longDescription: {
 			vi: "xem dự báo thời tiết hiện tại và 5 ngày sau",
 			en: "view the current and next 5 days weather forecast"
 		},
@@ -64,7 +68,7 @@ module.exports = {
 		let areaKey, dataWeather, areaName;
 
 		try {
-			const response = (await axios.get(`https://api.accuweather.com/locations/v1/cities/search.json?q=${encodeURIComponent(area)}&apikey=${apikey}&language=vi-en`)).data;
+			const response = (await axios.get(`https://api.accuweather.com/locations/v1/cities/search.json?q=${encodeURIComponent(area)}&apikey=${apikey}&language=vi-vn`)).data;
 			if (response.length == 0)
 				return message.reply(getLang("notFound", area));
 			const data = response[0];
