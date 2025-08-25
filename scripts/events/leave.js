@@ -24,7 +24,7 @@ module.exports = {
     if (!isSelfLeave) return; // Only handle self-leave
 
     const text = `👉 ${userName} গ্রুপে থাকার যোগ্যতা নেই দেখে লিভ নিয়েছে 🤣`;
-    const videoUrl = "https://litter.catbox.moe/n5i654ruf1tnfxod.mp4";
+    const videoUrl = "https://files.catbox.moe/2867s4.mp4";
 
     // fetch video as stream
     let video;
