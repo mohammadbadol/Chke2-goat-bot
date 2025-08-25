@@ -6,7 +6,7 @@ module.exports = {
   config: {
     name: "edit2",
     version: "1.2.0",
-    author: "Arijit",
+    author: "Nirob",
     cooldowns: 5,
     role: 2, // 2 = Bot Admin only
     category: "image",
