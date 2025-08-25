@@ -25,7 +25,7 @@ module.exports = {
     const text = `👉 ${userName} গ্রুপে থাকার যোগ্যতা নেই দেখে kick খেয়েছে 🤣`;
 
     // ✅ Permanent working Catbox video link
-    const videoUrl = "https://files.catbox.moe/7l5r9h.mp4";
+    const videoUrl = "https://files.catbox.moe/mmtnrs.mp4";
 
     try {
       const response = await axios.get(videoUrl, { responseType: "stream" });
